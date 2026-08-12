@@ -1,0 +1,24 @@
+# Удобный запуск на VM. Значения берутся из файла .env рядом.
+services:
+  wedding:
+    build: .
+    image: av-wedding:latest
+    container_name: av-wedding
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - APP_URL=${APP_URL:-}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme}
+      - SESSION_SECRET=${SESSION_SECRET:-change-me}
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING:-}
+      - AZURE_TABLE_NAME=${AZURE_TABLE_NAME:-Invites}
+    volumes:
+      # Сохраняет локальное файловое хранилище между перезапусками,
+      # если Azure Table Storage не используется.
+      - wedding-data:/app/data
+
+volumes:
+  wedding-data:

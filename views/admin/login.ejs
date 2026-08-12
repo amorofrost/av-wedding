@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <% var pageTitle = 'Вход · Админка'; var siteTitle = 'Админка'; %>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <main class="centered-page">
+    <form class="card-message admin-login" method="post" action="/admin/login">
+      <div class="card-message__emoji">🔐</div>
+      <h1>Панель организатора</h1>
+      <% if (error) { %><div class="alert alert--error"><p><%= error %></p></div><% } %>
+      <label class="field">
+        <span class="field__label">Пароль</span>
+        <input type="password" name="password" class="field__input" autofocus required />
+      </label>
+      <button type="submit" class="btn btn--primary">Войти</button>
+    </form>
+  </main>
+</body>
+</html>

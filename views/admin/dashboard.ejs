@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <% var pageTitle = 'Панель организатора'; var siteTitle = 'Админка'; %>
+  <%- include('../partials/head') %>
+</head>
+<body class="admin">
+  <header class="admin__topbar">
+    <h1>Панель организатора</h1>
+    <div class="admin__topbar-actions">
+      <a class="btn btn--ghost btn--sm" href="/admin/export.csv">Экспорт CSV</a>
+      <a class="btn btn--ghost btn--sm" href="/" target="_blank" rel="noopener">Сайт ↗</a>
+      <form method="post" action="/admin/logout" class="inline">
+        <button type="submit" class="btn btn--ghost btn--sm">Выйти</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="admin__main">
+    <% if (created) { %>
+      <div class="alert alert--success">
+        <p>Приглашение создано! Персональная ссылка:</p>
+        <code class="copy-link" data-link="/invite/<%= created %>"><%= inviteUrl(created) %></code>
+        <button type="button" class="btn btn--sm btn--ghost copy-btn" data-copy="<%= inviteUrl(created) %>">Копировать</button>
+      </div>
+    <% } %>
+    <% if (flash) { %><div class="alert alert--info"><p><%= flash %></p></div><% } %>
+
+    <!-- Статистика -->
+    <section class="stats">
+      <div class="stat"><span class="stat__num"><%= stats.total %></span><span class="stat__label">Приглашений</span></div>
+      <div class="stat"><span class="stat__num"><%= stats.responded %></span><span class="stat__label">Ответили</span></div>
+      <div class="stat stat--yes"><span class="stat__num"><%= stats.attending %></span><span class="stat__label">Придут</span></div>
+      <div class="stat stat--no"><span class="stat__num"><%= stats.declined %></span><span class="stat__label">Отказ</span></div>
+      <div class="stat"><span class="stat__num"><%= stats.pending %></span><span class="stat__label">Без ответа</span></div>
+      <div class="stat stat--total"><span class="stat__num"><%= stats.totalGuests %></span><span class="stat__label">Всего гостей</span></div>
+    </section>
+
+    <!-- Добавить приглашение -->
+    <section class="admin-card">
+      <h2>Новое приглашение</h2>
+      <form method="post" action="/admin/invites" class="admin-form">
+        <label class="field">
+          <span class="field__label">Имя(-ена) гостей *</span>
+          <input type="text" name="names" class="field__input" required
+            placeholder="Напр.: Иван и Мария Петровы" />
+        </label>
+        <label class="field field--narrow">
+          <span class="field__label">Макс. гостей</span>
+          <input type="number" name="maxGuests" class="field__input" min="1" max="20" value="2" />
+        </label>
+        <label class="field">
+          <span class="field__label">Заметка (только для вас)</span>
+          <input type="text" name="note" class="field__input" placeholder="Напр.: со стороны невесты" />
+        </label>
+        <button type="submit" class="btn btn--primary">Создать ссылку</button>
+      </form>
+    </section>
+
+    <!-- Список приглашений -->
+    <section class="admin-card">
+      <div class="admin-card__head">
+        <h2>Гости <span class="muted">(<%= invites.length %>)</span></h2>
+        <input type="search" id="guest-filter" class="field__input field__input--search"
+          placeholder="Поиск по имени…" />
+      </div>
+
+      <% if (invites.length === 0) { %>
+        <p class="muted">Пока нет приглашений. Создайте первое выше.</p>
+      <% } else { %>
+        <div class="table-wrap">
+          <table class="guests">
+            <thead>
+              <tr>
+                <th>Гость</th>
+                <th>Статус</th>
+                <th>Гостей</th>
+                <th>Детали</th>
+                <th>Ссылка</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% invites.forEach(function (i) { %>
+                <tr data-name="<%= (i.names || '').toLowerCase() %>">
+                  <td>
+                    <strong><%= i.names %></strong>
+                    <% if (i.note) { %><span class="row-note"><%= i.note %></span><% } %>
+                    <span class="muted small">макс. <%= i.maxGuests %></span>
+                  </td>
+                  <td>
+                    <% if (!i.responded) { %>
+                      <span class="badge badge--pending">ждём ответа</span>
+                    <% } else if (i.attending) { %>
+                      <span class="badge badge--yes">придёт</span>
+                    <% } else { %>
+                      <span class="badge badge--no">отказ</span>
+                    <% } %>
+                  </td>
+                  <td><%= i.attending ? (i.guestCount || 1) : '—' %></td>
+                  <td class="details-cell">
+                    <% if (i.dietary) { %><span class="chip">🍽 <%= i.dietary %></span><% } %>
+                    <% if (i.message) { %><span class="chip chip--msg">💬 <%= i.message %></span><% } %>
+                    <% if (!i.dietary && !i.message) { %><span class="muted">—</span><% } %>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn--sm btn--ghost copy-btn"
+                      data-copy="<%= inviteUrl(i.code) %>">Копировать</button>
+                    <a class="link-open" href="/invite/<%= i.code %>" target="_blank" rel="noopener">↗</a>
+                  </td>
+                  <td>
+                    <form method="post" action="/admin/invites/<%= i.code %>/delete" class="inline"
+                      onsubmit="return confirm('Удалить приглашение для «<%= i.names.replace(/'/g, '') %>»?');">
+                      <button type="submit" class="btn btn--sm btn--danger" title="Удалить">✕</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </section>
+
+    <p class="admin-backend muted small">Хранилище: <%= backend %></p>
+  </main>
+
+  <script src="/static/js/admin.js" defer></script>
+</body>
+</html>

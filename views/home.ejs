@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <!-- ── Обложка ─────────────────────────────────────────────────────── -->
+  <header class="hero">
+    <div class="hero__inner">
+      <p class="hero__eyebrow">Мы женимся</p>
+      <h1 class="hero__names">
+        <span><%= content.couple.bride %></span>
+        <span class="hero__amp">&amp;</span>
+        <span><%= content.couple.groom %></span>
+      </h1>
+      <p class="hero__date">
+        <%= content.event.dateHuman %> · <%= content.event.dayOfWeek %>
+      </p>
+      <p class="hero__city"><%= content.event.city %></p>
+
+      <div class="countdown" data-target="<%= content.event.dateISO %>" aria-label="Обратный отсчёт">
+        <div class="countdown__cell"><span data-cd="days">—</span><small>дней</small></div>
+        <div class="countdown__cell"><span data-cd="hours">—</span><small>часов</small></div>
+        <div class="countdown__cell"><span data-cd="minutes">—</span><small>минут</small></div>
+        <div class="countdown__cell"><span data-cd="seconds">—</span><small>секунд</small></div>
+      </div>
+
+      <a href="#details" class="scroll-hint" aria-label="Листать вниз">⌄</a>
+    </div>
+  </header>
+
+  <nav class="topnav">
+    <a href="#details">Детали</a>
+    <% if (content.story && content.story.length) { %><a href="#story">История</a><% } %>
+    <a href="#schedule">Программа</a>
+    <a href="#dresscode">Дресс-код</a>
+    <% if (content.faq && content.faq.length) { %><a href="#faq">Вопросы</a><% } %>
+  </nav>
+
+  <main>
+    <!-- ── Детали события ────────────────────────────────────────────── -->
+    <section id="details" class="section">
+      <h2 class="section__title">Где и когда</h2>
+      <p class="section__lead">Будем счастливы разделить этот день с вами.</p>
+      <div class="venues">
+        <% content.venues.forEach(function (v) { %>
+          <article class="venue">
+            <p class="venue__kicker"><%= v.title %></p>
+            <p class="venue__time"><%= v.time %></p>
+            <h3 class="venue__name"><%= v.name %></h3>
+            <p class="venue__address"><%= v.address %></p>
+            <% if (v.description) { %><p class="venue__desc"><%= v.description %></p><% } %>
+            <% if (v.mapUrl) { %>
+              <a class="btn btn--ghost" href="<%= v.mapUrl %>" target="_blank" rel="noopener">На карте →</a>
+            <% } %>
+          </article>
+        <% }); %>
+      </div>
+    </section>
+
+    <!-- ── История ───────────────────────────────────────────────────── -->
+    <% if (content.story && content.story.length) { %>
+      <section id="story" class="section section--tint">
+        <h2 class="section__title">Наша история</h2>
+        <div class="story">
+          <% content.story.forEach(function (s) { %>
+            <article class="story__item">
+              <h3><%= s.title %></h3>
+              <p><%= s.text %></p>
+            </article>
+          <% }); %>
+        </div>
+      </section>
+    <% } %>
+
+    <!-- ── Программа дня ──────────────────────────────────────────────── -->
+    <section id="schedule" class="section">
+      <h2 class="section__title">Программа дня</h2>
+      <ol class="timeline">
+        <% content.schedule.forEach(function (item) { %>
+          <li class="timeline__item">
+            <span class="timeline__icon"><%= item.icon %></span>
+            <span class="timeline__time"><%= item.time %></span>
+            <span class="timeline__title"><%= item.title %></span>
+          </li>
+        <% }); %>
+      </ol>
+    </section>
+
+    <!-- ── Дресс-код ─────────────────────────────────────────────────── -->
+    <section id="dresscode" class="section section--tint">
+      <h2 class="section__title"><%= content.dressCode.title %></h2>
+      <p class="section__lead"><%= content.dressCode.text %></p>
+      <% if (content.dressCode.palette && content.dressCode.palette.length) { %>
+        <div class="palette">
+          <% content.dressCode.palette.forEach(function (c) { %>
+            <span class="palette__dot" style="background: <%= c %>"></span>
+          <% }); %>
+        </div>
+      <% } %>
+    </section>
+
+    <!-- ── FAQ ───────────────────────────────────────────────────────── -->
+    <% if (content.faq && content.faq.length) { %>
+      <section id="faq" class="section">
+        <h2 class="section__title">Частые вопросы</h2>
+        <div class="faq">
+          <% content.faq.forEach(function (item) { %>
+            <details class="faq__item">
+              <summary><%= item.q %></summary>
+              <p><%= item.a %></p>
+            </details>
+          <% }); %>
+        </div>
+      </section>
+    <% } %>
+
+    <!-- ── RSVP-подсказка ────────────────────────────────────────────── -->
+    <section class="section section--cta">
+      <h2 class="section__title">Подтвердите присутствие</h2>
+      <p class="section__lead">
+        Мы отправили каждому гостю персональную ссылку-приглашение.
+        Пожалуйста, ответьте до <strong><%= content.rsvpDeadline.dateHuman %></strong>.
+      </p>
+      <p class="cta-hint">Откройте ссылку из вашего приглашения, чтобы ответить.</p>
+    </section>
+
+    <!-- ── Контакты ──────────────────────────────────────────────────── -->
+    <% if (content.contacts && content.contacts.length) { %>
+      <section class="section section--tint">
+        <h2 class="section__title">Контакты</h2>
+        <div class="contacts">
+          <% content.contacts.forEach(function (c) { %>
+            <div class="contact">
+              <p class="contact__name"><%= c.name %></p>
+              <% if (c.role) { %><p class="contact__role"><%= c.role %></p><% } %>
+              <% if (c.phone) { %><a class="contact__phone" href="tel:<%= c.phone.replace(/[^+\d]/g, '') %>"><%= c.phone %></a><% } %>
+            </div>
+          <% }); %>
+        </div>
+      </section>
+    <% } %>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/static/js/countdown.js" defer></script>
+</body>
+</html>
