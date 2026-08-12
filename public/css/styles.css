@@ -1,6 +1,6 @@
 /* ───────────────────────────────────────────────────────────────────────────
    Свадебный сайт — стили
-   Палитра: тёплый беж, оливково-зелёный акцент, мягкий кремовый фон.
+   Палитра: тёплый беж, тёмно-хвойный зелёный акцент, мягкий кремовый фон.
    ─────────────────────────────────────────────────────────────────────────── */
 
 :root {
@@ -9,9 +9,9 @@
   --ink: #3c3a35;
   --ink-soft: #6b665c;
   --line: #e4dccf;
-  --accent: #8a9a5b;      /* оливковый */
-  --accent-deep: #6f7d47;
-  --gold: #b99a63;
+  --accent: #2f5140;      /* тёмно-хвойный */
+  --accent-deep: #1f3a2c;
+  --gold: #9c7d45;
   --danger: #b45a4c;
   --white: #fffdf9;
   --radius: 14px;
@@ -168,7 +168,8 @@ a { color: var(--accent-deep); }
 
 /* ── Дресс-код ────────────────────────────────────────────────────────────── */
 .palette { display: flex; gap: 0.8rem; justify-content: center; margin-top: 1.4rem; }
-.palette__dot { width: 42px; height: 42px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06), var(--shadow); }
+/* Кольцо заметное — иначе светлые тона (жемчуг) сливаются с фоном. */
+.palette__dot { width: 42px; height: 42px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(60, 58, 53, 0.18), var(--shadow); }
 
 /* ── FAQ ──────────────────────────────────────────────────────────────────── */
 .faq { max-width: 680px; margin: 2rem auto 0; text-align: left; }
@@ -214,7 +215,7 @@ a { color: var(--accent-deep); }
   width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--line); border-radius: 10px;
   font-family: var(--sans); font-size: 1rem; background: var(--white); color: var(--ink);
 }
-.field__input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(138,154,91,0.15); }
+.field__input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47, 81, 64, 0.18); }
 textarea.field__input { resize: vertical; }
 
 /* ── RSVP-форма ───────────────────────────────────────────────────────────── */
@@ -229,14 +230,14 @@ textarea.field__input { resize: vertical; }
 }
 .choice:hover { border-color: var(--accent); }
 .choice input { accent-color: var(--accent); width: 18px; height: 18px; }
-.choice:has(input:checked) { border-color: var(--accent); background: #f6f8ee; }
+.choice:has(input:checked) { border-color: var(--accent); background: #edf2ee; }
 .rsvp-details { transition: opacity 0.2s; }
 .rsvp-form .btn--primary { width: 100%; margin-top: 0.6rem; }
 
 /* ── Плашки-уведомления ───────────────────────────────────────────────────── */
 .alert { border-radius: var(--radius); padding: 1.1rem 1.4rem; margin: 0 auto 1.6rem; max-width: 560px; text-align: left; }
 .alert p { margin: 0.2rem 0; }
-.alert--success { background: #eef4e1; border: 1px solid #cdd9a8; color: #4d5a2b; }
+.alert--success { background: #e9f1ec; border: 1px solid #bcd0c1; color: #264034; }
 .alert--error { background: #f8e7e3; border: 1px solid #e3b6ac; color: #8f3b2c; }
 .alert--info { background: #eef1f6; border: 1px solid #c8d2e0; color: #46536b; }
 
@@ -300,13 +301,13 @@ textarea.field__input { resize: vertical; }
 .guests th { text-align: left; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); padding: 0.6rem 0.7rem; border-bottom: 2px solid var(--line); }
 .guests td { padding: 0.8rem 0.7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
 .guests tr:hover td { background: #faf8f3; }
-.row-note { display: block; font-size: 0.75rem; color: var(--gold); }
+.row-note { display: block; font-size: 0.75rem; color: var(--ink-soft); }
 .small { font-size: 0.72rem; }
 .muted { color: var(--ink-soft); }
 
 .badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
 .badge--pending { background: #eef1f6; color: #46536b; }
-.badge--yes { background: #eef4e1; color: #4d5a2b; }
+.badge--yes { background: #e9f1ec; color: #264034; }
 .badge--no { background: #f8e7e3; color: #8f3b2c; }
 
 .chip { display: inline-block; background: #f4f1ea; border: 1px solid var(--line); border-radius: 8px; padding: 0.2rem 0.5rem; font-size: 0.78rem; margin: 0.1rem 0.2rem 0.1rem 0; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
