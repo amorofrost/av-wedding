@@ -4,3 +4,8 @@ node_modules/
 data/
 *.log
 .DS_Store
+
+# Swap-файлы редакторов: ..env.swp содержит копию .env вместе с секретами.
+*.swp
+*.swo
+*~

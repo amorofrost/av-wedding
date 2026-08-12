@@ -62,6 +62,7 @@ Dockerfile, docker-compose.yml
 | `CONTACT_PHONE` / `CONTACT_PHONE2` | Телефоны первого и второго контакта. Держатся вне git — репозиторий публичный. Если не заданы, контакт показывается без телефона |
 | `ADMIN_PASSWORD` | **Пароль для входа в `/admin`. Обязательно смените.** |
 | `SESSION_SECRET` | Длинная случайная строка для подписи cookie сессии |
+| `SESSION_COOKIE_SECURE` | Флаг `Secure` у cookie сессии. По умолчанию `true` при `NODE_ENV=production`. Такой cookie работает только по HTTPS — при доступе по `http://<ip>:3000` вход в `/admin` будет возвращать на форму логина. До настройки TLS можно выставить `false` (пароль пойдёт открытым текстом) |
 | `AZURE_STORAGE_CONNECTION_STRING` | Строка подключения к Azure Storage. Если не задана — используется локальный файл `data/invites.json` (только для разработки) |
 | `AZURE_STORAGE_ACCOUNT` / `AZURE_STORAGE_KEY` | Альтернатива строке подключения |
 | `AZURE_TABLE_NAME` | Имя таблицы (по умолчанию `Invites`) |

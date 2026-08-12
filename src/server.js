@@ -35,6 +35,16 @@ app.use(cookieParser());
 
 // Сессии (для админ-раздела)
 const isProd = process.env.NODE_ENV === 'production';
+
+// Cookie с флагом Secure браузер отдаёт только по HTTPS. За обратным прокси с TLS
+// это правильно, но если сайт открыт напрямую по http:// — cookie не выставится
+// вовсе и вход в админку будет молча возвращать на форму логина. Поэтому флаг
+// можно задать явно, независимо от NODE_ENV.
+const cookieSecure =
+  process.env.SESSION_COOKIE_SECURE !== undefined
+    ? process.env.SESSION_COOKIE_SECURE === 'true'
+    : isProd;
+
 app.use(
   session({
     name: 'av_sid',
@@ -44,7 +54,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: 'lax',
-      secure: isProd, // при HTTPS за прокси
+      secure: cookieSecure, // при HTTPS за прокси
       maxAge: 1000 * 60 * 60 * 12, // 12 часов
     },
   }),
@@ -89,6 +99,12 @@ async function start() {
     console.log(`♥ Свадебный сайт запущен на порту ${PORT}`);
     console.log(`  Хранилище: ${usingAzure() ? 'Azure Table Storage' : 'локальный файл (dev)'}`);
     console.log(`  Админка:   /admin`);
+    console.log(
+      `  Cookie:    Secure=${cookieSecure}` +
+        (cookieSecure
+          ? ' — вход в админку возможен только по HTTPS'
+          : ' — вход работает и по HTTP'),
+    );
   });
 }
 
