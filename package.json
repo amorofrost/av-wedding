@@ -1,0 +1,25 @@
+{
+  "name": "av-wedding",
+  "version": "1.0.0",
+  "description": "Wedding website with event info, personalized invites and RSVP",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node scripts/seed.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.3.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "nanoid": "^5.0.9"
+  },
+  "license": "MIT"
+}

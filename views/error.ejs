@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <% var pageTitle = 'Ошибка ' + code; %>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <main class="centered-page">
+    <div class="card-message">
+      <div class="card-message__emoji"><%= code === 404 ? '🔍' : '⚠️' %></div>
+      <h1><%= code %></h1>
+      <p><%= message %></p>
+      <a href="/" class="btn btn--ghost">На главную</a>
+    </div>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>
