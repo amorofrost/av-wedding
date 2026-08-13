@@ -82,6 +82,52 @@ a { color: var(--accent-deep); }
 .hero__city { color: var(--ink-soft); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.8rem; }
 .hero__invite-lead { margin: 1.2rem auto 0.4rem; max-width: 440px; color: var(--ink-soft); }
 
+/* ── Шапка с фото пары ────────────────────────────────────────────────────── */
+/* Класс hero--split ставится только когда задан HERO_PHOTO_URL. Без фото шапка
+   остаётся такой же, как раньше — по центру и в одну колонку. */
+.hero--split .hero__inner {
+  max-width: 1040px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4rem);
+  text-align: left;
+}
+.hero--split .hero__names { align-items: flex-start; }
+.hero--split .hero__invite-lead { margin-left: 0; }
+.hero--split .countdown { justify-content: flex-start; }
+
+.hero__photo {
+  position: relative;
+  margin: 0;
+  justify-self: center;
+  width: 100%;
+  max-width: 420px;
+}
+.hero__photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  /* Смещение кадра задаётся из content.couple.photoPosition */
+  object-position: var(--photo-pos, center);
+  /* Арка: полукруг сверху, мягкое скругление снизу */
+  border-radius: 50% 50% var(--radius) var(--radius) / 42% 42% var(--radius) var(--radius);
+  box-shadow: var(--shadow);
+  background: var(--bg-tint);
+}
+/* Тонкий контур-отступ — та же графика, что и круги в углах шапки */
+.hero__photo::after {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border: 1px solid var(--line);
+  border-radius: 50% 50% calc(var(--radius) + 6px) calc(var(--radius) + 6px)
+    / 42% 42% calc(var(--radius) + 6px) calc(var(--radius) + 6px);
+  pointer-events: none;
+}
+.hero--compact .hero__photo { max-width: 320px; }
+
 /* ── Обратный отсчёт ──────────────────────────────────────────────────────── */
 .countdown {
   display: flex; gap: 1rem; justify-content: center; margin: 2.4rem 0 1rem; flex-wrap: wrap;
@@ -320,4 +366,17 @@ textarea.field__input { resize: vertical; }
 @media (max-width: 700px) {
   .admin-form { grid-template-columns: 1fr; }
   .field--narrow { max-width: none; }
+
+  /* Шапка с фото складывается в одну колонку: фото сверху, текст под ним */
+  .hero--split .hero__inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 2rem;
+  }
+  .hero--split .hero__names { align-items: center; }
+  .hero--split .hero__invite-lead { margin-left: auto; }
+  .hero--split .countdown { justify-content: center; }
+  .hero--split .hero__photo { order: -1; max-width: 300px; }
+  /* Кадр чуть ниже, чтобы до имён не приходилось прокручивать */
+  .hero--split .hero__photo img { aspect-ratio: 4 / 5; }
 }

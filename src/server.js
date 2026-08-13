@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
@@ -24,10 +25,29 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'views'));
 
 // Статика
-app.use(
-  '/static',
-  express.static(path.join(__dirname, '..', 'public'), { maxAge: '7d' }),
-);
+const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+
+app.use('/static', express.static(PUBLIC_DIR, { maxAge: '7d' }));
+
+// Метка версии статики.
+//
+// Файлы отдаются с maxAge=7d, и браузер в течение недели берёт их из кэша, даже
+// не спрашивая сервер. HTML при этом не кэшируется и обновляется сразу — то есть
+// после выкладки гость получает новую разметку со старым CSS, и вёрстка едет.
+// Поэтому в адрес статики добавляется ?v=<метка>: файл изменился — изменился
+// адрес — браузер скачивает заново. Метка считается один раз при старте по
+// самому свежему времени изменения файлов в public/.
+function newestMtime(dir) {
+  let newest = 0;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    const time = entry.isDirectory() ? newestMtime(full) : fs.statSync(full).mtimeMs;
+    if (time > newest) newest = time;
+  }
+  return newest;
+}
+
+const ASSET_VERSION = Math.floor(newestMtime(PUBLIC_DIR)).toString(36);
 
 // Парсеры
 app.use(express.urlencoded({ extended: true }));
@@ -64,6 +84,7 @@ app.use(
 app.use((req, res, next) => {
   res.locals.siteTitle = `${content.couple.bride} & ${content.couple.groom}`;
   res.locals.currentYear = new Date().getFullYear();
+  res.locals.assetVersion = ASSET_VERSION;
   next();
 });
 

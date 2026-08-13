@@ -45,7 +45,11 @@ view. Several sections are conditional on non-empty arrays (`story`, `faq`, `ven
 emptying an array is the supported way to hide a block.
 
 Contact phone numbers deliberately come from `CONTACT_PHONE` / `CONTACT_PHONE2` env vars, not from
-the file — the repo is public. Keep any future personal data out of `content.js` the same way.
+the file — the repo is public. Keep any future personal data out of `content.js` the same way. The
+couple photo follows the same rule: `HERO_PHOTO_URL` (plus optional `HERO_PHOTO_POSITION` for the
+crop) is read into `content.couple.photoUrl` and drives the `hero--split` layout — when it is empty,
+both heroes fall back to the original single-column centred markup, so that empty state is a
+supported rendering path and must keep working.
 
 `content.event.dateISO` drives the client-side countdown (`data-target` attribute →
 `public/js/countdown.js`), while `dateHuman` is what guests read; both must be kept in sync manually.
@@ -99,7 +103,12 @@ container always listens on 3000 and the host port is mapped via `ports`.
 
 EJS templates in `views/` (`partials/head.ejs` and `footer.ejs` are shared; `pageTitle` is set as a
 local before including `head`). Static assets are served from `public/` at `/static` with a 7-day
-`maxAge`, so a cached CSS change may need a hard refresh when testing.
+`maxAge`. Because HTML is not cached but assets are, a deploy would otherwise pair new markup with a
+week-old stylesheet in returning visitors' browsers — which broke the hero layout once. `server.js`
+therefore computes `ASSET_VERSION` at boot from the newest mtime under `public/` and exposes it as
+`res.locals.assetVersion`; **every `/static/...` reference in a view must carry `?v=<%= assetVersion %>`**
+or it will be served stale for up to 7 days. Docker `COPY` preserves mtimes, so the value is stable
+across rebuilds and changes only when an asset actually changes.
 
 `public/js/*.js` are self-contained ES5-style IIFEs with no imports, no bundler, and no framework —
 keep new client scripts in that style and add the `<script>` tag to the relevant view. Design tokens

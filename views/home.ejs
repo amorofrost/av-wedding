@@ -5,25 +5,35 @@
 </head>
 <body>
   <!-- ── Обложка ─────────────────────────────────────────────────────── -->
-  <header class="hero">
+  <header class="hero<%= content.couple.photoUrl ? ' hero--split' : '' %>">
     <div class="hero__inner">
-      <p class="hero__eyebrow">Мы женимся</p>
-      <h1 class="hero__names">
-        <span><%= content.couple.bride %></span>
-        <span class="hero__amp">&amp;</span>
-        <span><%= content.couple.groom %></span>
-      </h1>
-      <p class="hero__date">
-        <%= content.event.dateHuman %> · <%= content.event.dayOfWeek %>
-      </p>
-      <p class="hero__city"><%= content.event.city %></p>
+      <div class="hero__text">
+        <p class="hero__eyebrow">Мы женимся</p>
+        <h1 class="hero__names">
+          <span><%= content.couple.bride %></span>
+          <span class="hero__amp">&amp;</span>
+          <span><%= content.couple.groom %></span>
+        </h1>
+        <p class="hero__date">
+          <%= content.event.dateHuman %> · <%= content.event.dayOfWeek %>
+        </p>
+        <p class="hero__city"><%= content.event.city %></p>
 
-      <div class="countdown" data-target="<%= content.event.dateISO %>" aria-label="Обратный отсчёт">
-        <div class="countdown__cell"><span data-cd="days">—</span><small>дней</small></div>
-        <div class="countdown__cell"><span data-cd="hours">—</span><small>часов</small></div>
-        <div class="countdown__cell"><span data-cd="minutes">—</span><small>минут</small></div>
-        <div class="countdown__cell"><span data-cd="seconds">—</span><small>секунд</small></div>
+        <div class="countdown" data-target="<%= content.event.dateISO %>" aria-label="Обратный отсчёт">
+          <div class="countdown__cell"><span data-cd="days">—</span><small>дней</small></div>
+          <div class="countdown__cell"><span data-cd="hours">—</span><small>часов</small></div>
+          <div class="countdown__cell"><span data-cd="minutes">—</span><small>минут</small></div>
+          <div class="countdown__cell"><span data-cd="seconds">—</span><small>секунд</small></div>
+        </div>
       </div>
+
+      <% if (content.couple.photoUrl) { %>
+        <figure class="hero__photo" style="--photo-pos: <%= content.couple.photoPosition %>">
+          <img src="<%= content.couple.photoUrl %>"
+            alt="<%= content.couple.bride %> и <%= content.couple.groom %>"
+            fetchpriority="high" decoding="async" />
+        </figure>
+      <% } %>
 
       <a href="#details" class="scroll-hint" aria-label="Листать вниз">⌄</a>
     </div>
@@ -143,6 +153,7 @@
   </main>
 
   <%- include('partials/footer') %>
-  <script src="/static/js/countdown.js" defer></script>
+  <script src="/static/js/countdown.js?v=<%= assetVersion %>" defer></script>
+  <% if (content.couple.photoUrl) { %><script src="/static/js/hero-photo.js?v=<%= assetVersion %>" defer></script><% } %>
 </body>
 </html>

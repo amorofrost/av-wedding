@@ -5,19 +5,29 @@
   <%- include('partials/head') %>
 </head>
 <body class="invite-page">
-  <header class="hero hero--compact">
+  <header class="hero hero--compact<%= content.couple.photoUrl ? ' hero--split' : '' %>">
     <div class="hero__inner">
-      <p class="hero__eyebrow">Дорогие</p>
-      <h1 class="hero__names hero__names--invite"><%= invite.names %></h1>
-      <p class="hero__invite-lead">
-        <%= content.couple.bride %> и <%= content.couple.groom %> приглашают вас на свою свадьбу
-      </p>
-      <p class="hero__date"><%= content.event.dateHuman %> · <%= content.event.city %></p>
-      <div class="countdown countdown--compact" data-target="<%= content.event.dateISO %>">
-        <div class="countdown__cell"><span data-cd="days">—</span><small>дней</small></div>
-        <div class="countdown__cell"><span data-cd="hours">—</span><small>часов</small></div>
-        <div class="countdown__cell"><span data-cd="minutes">—</span><small>минут</small></div>
+      <div class="hero__text">
+        <p class="hero__eyebrow">Дорогие</p>
+        <h1 class="hero__names hero__names--invite"><%= invite.names %></h1>
+        <p class="hero__invite-lead">
+          <%= content.couple.bride %> и <%= content.couple.groom %> приглашают вас на свою свадьбу
+        </p>
+        <p class="hero__date"><%= content.event.dateHuman %> · <%= content.event.city %></p>
+        <div class="countdown countdown--compact" data-target="<%= content.event.dateISO %>">
+          <div class="countdown__cell"><span data-cd="days">—</span><small>дней</small></div>
+          <div class="countdown__cell"><span data-cd="hours">—</span><small>часов</small></div>
+          <div class="countdown__cell"><span data-cd="minutes">—</span><small>минут</small></div>
+        </div>
       </div>
+
+      <% if (content.couple.photoUrl) { %>
+        <figure class="hero__photo" style="--photo-pos: <%= content.couple.photoPosition %>">
+          <img src="<%= content.couple.photoUrl %>"
+            alt="<%= content.couple.bride %> и <%= content.couple.groom %>"
+            fetchpriority="high" decoding="async" />
+        </figure>
+      <% } %>
     </div>
   </header>
 
@@ -121,7 +131,8 @@
   </main>
 
   <%- include('partials/footer') %>
-  <script src="/static/js/countdown.js" defer></script>
-  <script src="/static/js/rsvp.js" defer></script>
+  <script src="/static/js/countdown.js?v=<%= assetVersion %>" defer></script>
+  <script src="/static/js/rsvp.js?v=<%= assetVersion %>" defer></script>
+  <% if (content.couple.photoUrl) { %><script src="/static/js/hero-photo.js?v=<%= assetVersion %>" defer></script><% } %>
 </body>
 </html>
