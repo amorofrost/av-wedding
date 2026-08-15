@@ -128,8 +128,13 @@ container always listens on 3000 and the host port is mapped via `ports`.
 
 ### Frontend
 
-EJS templates in `views/` (`partials/head.ejs` and `footer.ejs` are shared; `pageTitle` is set as a
-local before including `head`). Static assets are served from `public/` at `/static` with a 7-day
+EJS templates in `views/` (`partials/head.ejs` and `footer.ejs` are shared). A page title **must** be
+passed as include data — `include('partials/head', { pageTitle: '…' })` — never declared as
+`<% var pageTitle = … %>` before the include: the partial compiles to its own function and won't see
+that variable, so the title silently falls back to `siteTitle`. That bug shipped once and made every
+page render the same title. It hid because `siteTitle` *does* exist in `res.locals`, so the admin
+views' `var siteTitle = 'Админка'` appeared to work — it was mutating the shared locals object
+through EJS's `with(locals)`. Pages with no title of their own (`home.ejs`) correctly fall back. Static assets are served from `public/` at `/static` with a 7-day
 `maxAge`. Because HTML is not cached but assets are, a deploy would otherwise pair new markup with a
 week-old stylesheet in returning visitors' browsers — which broke the hero layout once. `server.js`
 therefore computes `ASSET_VERSION` at boot from the newest mtime under `public/` and exposes it as

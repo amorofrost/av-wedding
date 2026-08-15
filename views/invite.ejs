@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <% var pageTitle = 'Приглашение · ' + siteTitle; %>
-  <%- include('partials/head') %>
+  <%- include('partials/head', { pageTitle: 'Приглашение · ' + siteTitle }) %>
 </head>
 <body class="invite-page">
   <header class="hero hero--compact<%= content.couple.photoUrl ? ' hero--split' : '' %>">

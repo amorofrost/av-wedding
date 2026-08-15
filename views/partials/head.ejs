@@ -1,6 +1,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
+<%#
+  pageTitle приходит вторым аргументом include:
+  include('partials/head', { pageTitle: '...' }).
+  Объявлять его в родителе как обычную переменную нельзя: партиал компилируется
+  отдельной функцией и такую переменную не увидит, поэтому заголовок молча
+  откатится к siteTitle. Без своего pageTitle страница берёт siteTitle — это нормально.
+%>
 <title><%= typeof pageTitle !== 'undefined' ? pageTitle : siteTitle %></title>
 <meta name="description" content="Приглашение на свадьбу <%= siteTitle %>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
