@@ -13,6 +13,29 @@ function inviteUrl(req, code) {
   return `${base}/invite/${code}`;
 }
 
+// ── Ночёвка ──────────────────────────────────────────────────────────────────
+// Дом снят на две ночи, и кроватей на каждую нужно разное количество: часть
+// гостей приезжает только в пятницу, часть — только на субботу. Поэтому считаем
+// не «сколько человек ночует», а сколько ночует в каждую из ночей.
+const STAYS_FRI = ['fri', 'both'];
+const STAYS_SAT = ['sat', 'both'];
+
+function countGuests(invites, values) {
+  return invites
+    .filter((i) => i.attending === true && values.includes(i.overnight))
+    .reduce((sum, i) => sum + (i.guestCount || 0), 0);
+}
+
+function overnightLabel(value) {
+  const option = content.rsvp.overnightOptions.find((o) => o.value === value);
+  return option ? option.label : '';
+}
+
+function overnightShort(value) {
+  const option = content.rsvp.overnightOptions.find((o) => o.value === value);
+  return option ? option.short : '';
+}
+
 // ── Логин ────────────────────────────────────────────────────────────────────
 router.get('/login', (req, res) => {
   if (req.session?.isAdmin) return res.redirect('/admin');
@@ -46,11 +69,14 @@ router.get('/', requireAdmin, async (req, res, next) => {
       totalGuests: invites
         .filter((i) => i.attending === true)
         .reduce((sum, i) => sum + (i.guestCount || 0), 0),
+      nightFri: countGuests(invites, STAYS_FRI),
+      nightSat: countGuests(invites, STAYS_SAT),
     };
 
     res.render('admin/dashboard', {
       invites,
       stats,
+      overnightShort,
       inviteUrl: (code) => inviteUrl(req, code),
       backend: usingAzure() ? 'Azure Table Storage' : 'Локальный файл (dev)',
       created: req.query.created || null,
@@ -114,6 +140,7 @@ router.get('/export.csv', requireAdmin, async (req, res, next) => {
       'Ответ получен',
       'Придёт',
       'Кол-во гостей',
+      'Ночёвка',
       'Ограничения в еде',
       'Сообщение',
       'Дата ответа',
@@ -128,6 +155,7 @@ router.get('/export.csv', requireAdmin, async (req, res, next) => {
         i.responded ? 'да' : 'нет',
         i.attending === true ? 'да' : i.attending === false ? 'нет' : '',
         i.guestCount ?? '',
+        overnightLabel(i.overnight),
         i.dietary,
         i.message,
         i.respondedAt || '',

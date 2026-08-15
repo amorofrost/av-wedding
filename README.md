@@ -30,7 +30,8 @@ VM в Azure.
 ```
 src/
   server.js            — точка входа (Express)
-  config/content.js    — ВСЁ содержимое сайта (тексты, даты, площадки) — редактируйте здесь
+  config/content.js    — общие тексты и оформление сайта
+  config/content.example.js — шаблон личных данных (копируется в content.local.js)
   lib/store.js         — хранилище: Azure Table Storage или локальный файл
   middleware/auth.js   — защита админки паролем
   routes/              — public / invite / admin
@@ -45,9 +46,28 @@ Dockerfile, docker-compose.yml
 
 ## Настройка содержимого
 
-Все тексты, даты, имена, площадки, программа дня, дресс-код и FAQ находятся в
-одном файле — [`src/config/content.js`](src/config/content.js). Отредактируйте
-его под свою свадьбу и перезапустите приложение (или пересоберите контейнер).
+Содержимое разделено на два файла, чтобы личные данные не попадали в публичный
+репозиторий:
+
+| Файл | Что внутри | В git? |
+|---|---|---|
+| [`src/config/content.js`](src/config/content.js) | дресс-код, FAQ, история, футер, общая структура | да |
+| `src/config/content.local.js` | имена, даты, площадка, расписание, контакты | **нет** |
+
+Перед первым запуском создайте второй файл из шаблона:
+
+```bash
+cp src/config/content.example.js src/config/content.local.js
+```
+
+Без него приложение не стартует — так нельзя случайно показать гостям заглушки
+вроде «Имя невесты & Имя жениха».
+
+Перечислять в `content.local.js` нужно только то, что переопределяете: объекты
+сливаются по ключам, массивы заменяются целиком. Телефоны и ссылки на фото
+задаются переменными окружения (см. ниже) — они тоже не в git.
+
+После правок перезапустите приложение (или пересоберите контейнер).
 
 ---
 
@@ -77,6 +97,7 @@ Dockerfile, docker-compose.yml
 ```bash
 npm install
 cp .env.example .env        # задайте ADMIN_PASSWORD и SESSION_SECRET
+cp src/config/content.example.js src/config/content.local.js   # личные данные
 npm run seed                # (необязательно) добавит тестовые приглашения
 npm start
 ```
@@ -105,6 +126,10 @@ git clone <repo-url> av-wedding && cd av-wedding
 cp .env.example .env
 # отредактируйте .env: ADMIN_PASSWORD, SESSION_SECRET, APP_URL,
 # AZURE_STORAGE_CONNECTION_STRING
+
+cp src/config/content.example.js src/config/content.local.js
+# впишите имена, даты и площадку — этого файла нет в git, он живёт только
+# на этой машине и попадает в образ при сборке (COPY src ./src)
 ```
 
 ### 3. Запуск через Docker Compose

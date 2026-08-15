@@ -11,7 +11,7 @@
         <p class="hero__eyebrow">Дорогие</p>
         <h1 class="hero__names hero__names--invite"><%= invite.names %></h1>
         <p class="hero__invite-lead">
-          <%= content.couple.bride %> и <%= content.couple.groom %> приглашают вас на свою свадьбу
+          <%= content.couple.groom %> и <%= content.couple.bride %> приглашают вас на свою свадьбу
         </p>
         <p class="hero__date"><%= content.event.dateHuman %> · <%= content.event.city %></p>
         <div class="countdown countdown--compact" data-target="<%= content.event.dateISO %>">
@@ -24,7 +24,7 @@
       <% if (content.couple.photoUrl) { %>
         <figure class="hero__photo" style="--photo-pos: <%= content.couple.photoPosition %>">
           <img src="<%= content.couple.photoUrl %>"
-            alt="<%= content.couple.bride %> и <%= content.couple.groom %>"
+            alt="<%= content.couple.groom %> и <%= content.couple.bride %>"
             fetchpriority="high" decoding="async" />
         </figure>
       <% } %>
@@ -34,21 +34,19 @@
   <main class="invite-main">
     <!-- Краткие детали -->
     <section class="section">
-      <div class="venues venues--compact">
-        <% content.venues.forEach(function (v) { %>
-          <article class="venue">
-            <p class="venue__kicker"><%= v.title %></p>
-            <p class="venue__time"><%= v.time %></p>
-            <h3 class="venue__name"><%= v.name %></h3>
-            <p class="venue__address"><%= v.address %></p>
-            <% if (v.mapUrl) { %>
-              <a class="btn btn--ghost" href="<%= v.mapUrl %>" target="_blank" rel="noopener">На карте →</a>
-            <% } %>
-          </article>
-        <% }); %>
-      </div>
+      <!-- Площадка одна на всё торжество, поэтому здесь без фото:
+           картинку в шапке уже занимает фото пары. -->
+      <article class="venue venue--solo">
+        <p class="venue__kicker"><%= content.venue.kicker %></p>
+        <p class="venue__time">Церемония в <%= content.event.timeHuman %></p>
+        <h3 class="venue__name"><%= content.venue.name %></h3>
+        <p class="venue__address"><%= content.venue.address %></p>
+        <% if (content.venue.mapUrl) { %>
+          <a class="btn btn--ghost" href="<%= content.venue.mapUrl %>" target="_blank" rel="noopener">На карте →</a>
+        <% } %>
+      </article>
       <p class="invite-more">
-        <a href="/#schedule">Смотреть программу дня и все детали →</a>
+        <a href="/#when">Смотреть расписание и все детали →</a>
       </p>
     </section>
 
@@ -110,6 +108,17 @@
           <% } else { %>
             <input type="hidden" name="guestCount" value="1" />
           <% } %>
+
+          <fieldset class="rsvp-overnight">
+            <legend class="field__label"><%= content.rsvp.overnightQuestion %></legend>
+            <% content.rsvp.overnightOptions.forEach(function (o) { %>
+              <label class="choice choice--sm">
+                <input type="radio" name="overnight" value="<%= o.value %>"
+                  <%= invite.overnight === o.value ? 'checked' : '' %> required />
+                <span><%= o.label %></span>
+              </label>
+            <% }); %>
+          </fieldset>
 
           <label class="field">
             <span class="field__label">Ограничения в еде / аллергии</span>

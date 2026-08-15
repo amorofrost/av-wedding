@@ -34,6 +34,8 @@
       <div class="stat stat--no"><span class="stat__num"><%= stats.declined %></span><span class="stat__label">Отказ</span></div>
       <div class="stat"><span class="stat__num"><%= stats.pending %></span><span class="stat__label">Без ответа</span></div>
       <div class="stat stat--total"><span class="stat__num"><%= stats.totalGuests %></span><span class="stat__label">Всего гостей</span></div>
+      <div class="stat stat--night"><span class="stat__num"><%= stats.nightFri %></span><span class="stat__label">Ночь пт</span></div>
+      <div class="stat stat--night"><span class="stat__num"><%= stats.nightSat %></span><span class="stat__label">Ночь сб</span></div>
     </section>
 
     <!-- Добавить приглашение -->
@@ -99,9 +101,11 @@
                   </td>
                   <td><%= i.attending ? (i.guestCount || 1) : '—' %></td>
                   <td class="details-cell">
+                    <% var stay = overnightShort(i.overnight); %>
+                    <% if (stay) { %><span class="chip chip--night">🌙 <%= stay %></span><% } %>
                     <% if (i.dietary) { %><span class="chip">🍽 <%= i.dietary %></span><% } %>
                     <% if (i.message) { %><span class="chip chip--msg">💬 <%= i.message %></span><% } %>
-                    <% if (!i.dietary && !i.message) { %><span class="muted">—</span><% } %>
+                    <% if (!stay && !i.dietary && !i.message) { %><span class="muted">—</span><% } %>
                   </td>
                   <td>
                     <button type="button" class="btn btn--sm btn--ghost copy-btn"

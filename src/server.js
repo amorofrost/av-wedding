@@ -82,7 +82,8 @@ app.use(
 
 // Общие переменные для всех шаблонов
 app.use((req, res, next) => {
-  res.locals.siteTitle = `${content.couple.bride} & ${content.couple.groom}`;
+  // Порядок — как в монограмме: сначала жених, потом невеста.
+  res.locals.siteTitle = `${content.couple.groom} & ${content.couple.bride}`;
   res.locals.currentYear = new Date().getFullYear();
   res.locals.assetVersion = ASSET_VERSION;
   next();

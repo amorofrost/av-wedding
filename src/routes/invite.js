@@ -53,10 +53,18 @@ router.post('/invite/:code/rsvp', async (req, res, next) => {
       if (guestCount > invite.maxGuests) guestCount = invite.maxGuests;
     }
 
+    // Ночёвка: принимаем только значения из списка в content, всё остальное —
+    // «ответа нет». Отказавшимся гостям вопрос не задаётся вовсе.
+    const allowedOvernight = content.rsvp.overnightOptions.map((o) => o.value);
+    const overnightRaw = String(req.body.overnight || '');
+    const overnight =
+      attending && allowedOvernight.includes(overnightRaw) ? overnightRaw : '';
+
     const rsvp = {
       attending,
       guestCount: attending ? guestCount : 0,
       dietary: attending ? String(req.body.dietary || '').slice(0, 500) : '',
+      overnight,
       message: String(req.body.message || '').slice(0, 1000),
     };
 

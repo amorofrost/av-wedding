@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A wedding guest website (Вероника & Андрей, 10 Oct 2026, Sedro-Woolley WA): a public info page,
+A wedding guest website: a public info page,
 per-guest invite links (`/invite/<code>`), an RSVP form, and a password-protected admin panel at
 `/admin`. Express + EJS server-side rendering, no build step, no client framework. Data lives in
 Azure Table Storage in production, in a local JSON file in development. Deployed as a Docker
@@ -22,9 +22,11 @@ npm start        # production entrypoint
 npm run seed     # inserts 3 sample invites, prints their /invite/<code> URLs
 ```
 
-Requires Node >= 20 (Docker image is node:22-alpine). Copy `.env.example` → `.env` first; at minimum
-set `ADMIN_PASSWORD` and `SESSION_SECRET`. Without `AZURE_STORAGE_CONNECTION_STRING` the app falls
-back to `data/invites.json`, so local dev needs no Azure account.
+Requires Node >= 20 (Docker image is node:22-alpine). Two setup copies are needed before the app will
+run: `.env.example` → `.env` (at minimum `ADMIN_PASSWORD` and `SESSION_SECRET`) and
+`src/config/content.example.js` → `src/config/content.local.js`. Without
+`AZURE_STORAGE_CONNECTION_STRING` the app falls back to `data/invites.json`, so local dev needs no
+Azure account.
 
 Docker: `docker compose up -d --build`, then `docker compose logs -f`. Health endpoint: `GET /healthz`.
 
@@ -39,17 +41,40 @@ this file.
 ### Content is data, not markup
 
 `src/config/content.js` is the single source of truth for every piece of site copy: couple names,
-event date/time, venues, day schedule, dress code + palette, story, FAQ, contacts, footer. Templates
-only render it. Editing wedding details means editing that file — never hardcode text into a `.ejs`
-view. Several sections are conditional on non-empty arrays (`story`, `faq`, `venues[].mapUrl`), so
-emptying an array is the supported way to hide a block.
+event date/time, the venue, the schedule, RSVP options, dress code + palette, story, FAQ, contacts,
+footer. Templates only render it. Editing wedding details means editing that content — never hardcode
+text into a `.ejs` view. Several sections are conditional on non-empty arrays (`story`, `faq`,
+`venue.mapUrl`), so emptying an array is the supported way to hide a block.
+
+**The content is split across two files because the repo is public.** `content.js` holds the
+loader plus the non-identifying defaults; the identifying half — names, all dates, the venue,
+the schedule, contact names — lives in gitignored `src/config/content.local.js`, with
+`content.example.js` as the committed placeholder template. `content.js` ends with a top-level
+`await import('./content.local.js')` and a **one-level-deep** merge: plain objects merge per key
+(so local can set `couple: { bride }` alone), arrays and scalars replace wholesale. A missing local
+file exits the process with instructions rather than silently serving "Имя невесты" to guests — but
+a *syntax error* inside it is rethrown untouched, so don't collapse those two cases. Never move
+identifying data back into `content.js`, and never let `.dockerignore` exclude the local file:
+`COPY src ./src` is how it reaches the image, taken from the build machine.
+
+The whole event happens at one place over two nights (9–11 Oct), so `content.venue` is a **single
+object, not an array** — it renders once on the home page (`#venue` / "Где") and once on the invite.
+`content.schedule` (`#when` / "Когда") is grouped by day: `[{ date, dayOfWeek, items: [{ time,
+title, text }] }]`, with `text` optional. The date lives in the day heading, never repeated per row.
+
+`content.rsvp.overnightOptions` is the closed set of answers to the overnight question — `none` /
+`fri` / `sat` / `both`. It is the *only* place those values are listed: `routes/invite.js` validates
+the submitted answer against it, so adding or renaming a value there is enough. Each option carries
+`label` (guest-facing, also used in the CSV) and `short` (the admin chip).
 
 Contact phone numbers deliberately come from `CONTACT_PHONE` / `CONTACT_PHONE2` env vars, not from
-the file — the repo is public. Keep any future personal data out of `content.js` the same way. The
-couple photo follows the same rule: `HERO_PHOTO_URL` (plus optional `HERO_PHOTO_POSITION` for the
-crop) is read into `content.couple.photoUrl` and drives the `hero--split` layout — when it is empty,
-both heroes fall back to the original single-column centred markup, so that empty state is a
-supported rendering path and must keep working.
+the file — the repo is public. Keep any future personal data out of `content.js` the same way. Two
+photos follow the same rule and the same pattern: `HERO_PHOTO_URL` (plus optional
+`HERO_PHOTO_POSITION` for the crop) → `content.couple.photoUrl` → `hero--split`, and
+`VENUE_PHOTO_URL` → `content.venue.photoUrl` → `venue-block--split`. When either is empty the block
+falls back to the single-column centred markup, so **both empty states are supported rendering paths
+and must keep working**. Each has a matching client script (`hero-photo.js`, `venue-photo.js`) that
+tears the figure back down to that fallback if the external image fails to load.
 
 `content.event.dateISO` drives the client-side countdown (`data-target` attribute →
 `public/js/countdown.js`), while `dateHuman` is what guests read; both must be kept in sync manually.
@@ -67,6 +92,8 @@ Storage cannot hold `null`: `toEntity()` writes `''` for absent `attending` / `g
 timestamps, and `normalize()` maps them back to `null` on read. `attending` is deliberately tri-state
 (`true` / `false` / `null` = no answer yet) — code that treats it as a boolean will misreport guests
 who haven't responded. Prefer `attending === true` over truthiness checks, as the routes do.
+`overnight` is a plain string rather than tri-state, where `''` means "no answer" — that also covers
+rows written before the field existed, so no migration is needed.
 
 Azure layout: one table (`Invites` by default), fixed `partitionKey = 'invite'`, `rowKey` = the
 invite code. The table is created on first run. `getStore()` is awaited in `start()` before

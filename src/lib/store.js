@@ -44,6 +44,9 @@ function normalize(entity = {}) {
         : Number(entity.guestCount),
     dietary: entity.dietary ?? '',
     message: entity.message ?? '',
+    // Ночёвка: одно из значений content.rsvp.overnightOptions,
+    // '' — гость ещё не отвечал (в том числе записи, созданные до появления поля).
+    overnight: entity.overnight ?? '',
     respondedAt: entity.respondedAt ?? null,
     createdAt: entity.createdAt ?? null,
   };
@@ -92,6 +95,7 @@ class AzureStore {
       guestCount: inv.guestCount === null ? '' : Number(inv.guestCount),
       dietary: inv.dietary ?? '',
       message: inv.message ?? '',
+      overnight: inv.overnight ?? '',
       respondedAt: inv.respondedAt ?? '',
       createdAt: inv.createdAt ?? '',
     };

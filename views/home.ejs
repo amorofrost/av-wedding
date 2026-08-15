@@ -10,9 +10,9 @@
       <div class="hero__text">
         <p class="hero__eyebrow">Мы женимся</p>
         <h1 class="hero__names">
-          <span><%= content.couple.bride %></span>
-          <span class="hero__amp">&amp;</span>
           <span><%= content.couple.groom %></span>
+          <span class="hero__amp">&amp;</span>
+          <span><%= content.couple.bride %></span>
         </h1>
         <p class="hero__date">
           <%= content.event.dateHuman %> · <%= content.event.dayOfWeek %>
@@ -30,7 +30,7 @@
       <% if (content.couple.photoUrl) { %>
         <figure class="hero__photo" style="--photo-pos: <%= content.couple.photoPosition %>">
           <img src="<%= content.couple.photoUrl %>"
-            alt="<%= content.couple.bride %> и <%= content.couple.groom %>"
+            alt="<%= content.couple.groom %> и <%= content.couple.bride %>"
             fetchpriority="high" decoding="async" />
         </figure>
       <% } %>
@@ -40,37 +40,70 @@
   </header>
 
   <nav class="topnav">
-    <a href="#details">Детали</a>
+    <a href="#venue">Где</a>
+    <a href="#when">Когда</a>
     <% if (content.story && content.story.length) { %><a href="#story">История</a><% } %>
-    <a href="#schedule">Программа</a>
     <a href="#dresscode">Дресс-код</a>
     <% if (content.faq && content.faq.length) { %><a href="#faq">Вопросы</a><% } %>
   </nav>
 
   <main>
-    <!-- ── Детали события ────────────────────────────────────────────── -->
-    <section id="details" class="section">
-      <h2 class="section__title">Где и когда</h2>
+    <!-- ── Где ───────────────────────────────────────────────────────── -->
+    <section id="venue" class="section">
+      <h2 class="section__title">Где</h2>
       <p class="section__lead">Будем счастливы разделить этот день с вами.</p>
-      <div class="venues">
-        <% content.venues.forEach(function (v) { %>
-          <article class="venue">
-            <p class="venue__kicker"><%= v.title %></p>
-            <p class="venue__time"><%= v.time %></p>
-            <h3 class="venue__name"><%= v.name %></h3>
-            <p class="venue__address"><%= v.address %></p>
-            <% if (v.description) { %><p class="venue__desc"><%= v.description %></p><% } %>
-            <% if (v.mapUrl) { %>
-              <a class="btn btn--ghost" href="<%= v.mapUrl %>" target="_blank" rel="noopener">На карте →</a>
-            <% } %>
-          </article>
+
+      <div class="venue-block<%= content.venue.photoUrl ? ' venue-block--split' : '' %>">
+        <% if (content.venue.photoUrl) { %>
+          <figure class="venue__photo">
+            <img src="<%= content.venue.photoUrl %>"
+              alt="<%= content.venue.name %> — дом, где пройдёт свадьба"
+              loading="lazy" decoding="async" />
+          </figure>
+        <% } %>
+
+        <article class="venue">
+          <p class="venue__kicker"><%= content.venue.kicker %></p>
+          <h3 class="venue__name"><%= content.venue.name %></h3>
+          <p class="venue__address"><%= content.venue.address %></p>
+          <% if (content.venue.description) { %>
+            <p class="venue__desc"><%= content.venue.description %></p>
+          <% } %>
+          <% if (content.venue.mapUrl) { %>
+            <a class="btn btn--ghost" href="<%= content.venue.mapUrl %>" target="_blank" rel="noopener">На карте →</a>
+          <% } %>
+        </article>
+      </div>
+    </section>
+
+    <!-- ── Когда ─────────────────────────────────────────────────────── -->
+    <section id="when" class="section section--tint">
+      <h2 class="section__title">Когда</h2>
+      <div class="schedule">
+        <% content.schedule.forEach(function (day) { %>
+          <section class="schedule-day">
+            <h3 class="schedule-day__date">
+              <%= day.date %><span class="schedule-day__dow"><%= day.dayOfWeek %></span>
+            </h3>
+            <ol class="schedule-day__list">
+              <% day.items.forEach(function (item) { %>
+                <li class="schedule-item">
+                  <span class="schedule-item__time"><%= item.time %></span>
+                  <span class="schedule-item__body">
+                    <span class="schedule-item__title"><%= item.title %></span>
+                    <% if (item.text) { %><span class="schedule-item__text"><%= item.text %></span><% } %>
+                  </span>
+                </li>
+              <% }); %>
+            </ol>
+          </section>
         <% }); %>
       </div>
     </section>
 
     <!-- ── История ───────────────────────────────────────────────────── -->
     <% if (content.story && content.story.length) { %>
-      <section id="story" class="section section--tint">
+      <section id="story" class="section">
         <h2 class="section__title">Наша история</h2>
         <div class="story">
           <% content.story.forEach(function (s) { %>
@@ -83,22 +116,8 @@
       </section>
     <% } %>
 
-    <!-- ── Программа дня ──────────────────────────────────────────────── -->
-    <section id="schedule" class="section">
-      <h2 class="section__title">Программа дня</h2>
-      <ol class="timeline">
-        <% content.schedule.forEach(function (item) { %>
-          <li class="timeline__item">
-            <span class="timeline__icon"><%= item.icon %></span>
-            <span class="timeline__time"><%= item.time %></span>
-            <span class="timeline__title"><%= item.title %></span>
-          </li>
-        <% }); %>
-      </ol>
-    </section>
-
     <!-- ── Дресс-код ─────────────────────────────────────────────────── -->
-    <section id="dresscode" class="section section--tint">
+    <section id="dresscode" class="section">
       <h2 class="section__title"><%= content.dressCode.title %></h2>
       <p class="section__lead"><%= content.dressCode.text %></p>
       <% if (content.dressCode.palette && content.dressCode.palette.length) { %>
@@ -112,7 +131,7 @@
 
     <!-- ── FAQ ───────────────────────────────────────────────────────── -->
     <% if (content.faq && content.faq.length) { %>
-      <section id="faq" class="section">
+      <section id="faq" class="section section--tint">
         <h2 class="section__title">Частые вопросы</h2>
         <div class="faq">
           <% content.faq.forEach(function (item) { %>
@@ -137,7 +156,7 @@
 
     <!-- ── Контакты ──────────────────────────────────────────────────── -->
     <% if (content.contacts && content.contacts.length) { %>
-      <section class="section section--tint">
+      <section class="section">
         <h2 class="section__title">Контакты</h2>
         <div class="contacts">
           <% content.contacts.forEach(function (c) { %>
@@ -155,5 +174,6 @@
   <%- include('partials/footer') %>
   <script src="/static/js/countdown.js?v=<%= assetVersion %>" defer></script>
   <% if (content.couple.photoUrl) { %><script src="/static/js/hero-photo.js?v=<%= assetVersion %>" defer></script><% } %>
+  <% if (content.venue.photoUrl) { %><script src="/static/js/venue-photo.js?v=<%= assetVersion %>" defer></script><% } %>
 </body>
 </html>
