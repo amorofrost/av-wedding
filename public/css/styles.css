@@ -437,3 +437,37 @@ textarea.field__input { resize: vertical; }
   /* Кадр чуть ниже, чтобы до имён не приходилось прокручивать */
   .hero--split .hero__photo img { aspect-ratio: 4 / 5; }
 }
+
+/* ── Переключатель языка ──────────────────────────────────────────────────── */
+.lang-switcher {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  z-index: 5;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: rgba(255, 253, 249, 0.75);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+.lang-switcher__item {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.lang-switcher__item:hover { color: var(--accent-deep); }
+.lang-switcher__item.is-active {
+  background: var(--accent);
+  color: var(--white);
+}
+/* На страницах-карточках (ошибка, приглашение не найдено) шапки нет,
+   поэтому переключатель крепится к окну. */
+.centered-page .lang-switcher { position: fixed; }

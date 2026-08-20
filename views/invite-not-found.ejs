@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="<%= lang %>">
 <head>
   <%- include('partials/head', { pageTitle: 'Приглашение не найдено' }) %>
 </head>
 <body>
   <main class="centered-page">
+    <%- include('partials/lang-switcher') %>
     <div class="card-message">
       <div class="card-message__emoji">💌</div>
       <h1>Приглашение не найдено</h1>

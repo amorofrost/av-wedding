@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="<%= lang %>">
 <head>
   <%- include('partials/head', { pageTitle: 'Ошибка ' + code }) %>
 </head>
 <body>
   <main class="centered-page">
+    <%- include('partials/lang-switcher') %>
     <div class="card-message">
       <div class="card-message__emoji"><%= code === 404 ? '🔍' : '⚠️' %></div>
       <h1><%= code %></h1>

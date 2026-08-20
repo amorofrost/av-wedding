@@ -11,7 +11,9 @@ import inviteRoutes from './routes/invite.js';
 import adminRoutes from './routes/admin.js';
 import { getContent } from './config/content.js';
 import { getStore, usingAzure } from './lib/store.js';
-import { DEFAULT_LANG } from './lib/lang.js';
+import { DEFAULT_LANG, LANG_COOKIE, normalizeLang, resolveLang } from './lib/lang.js';
+import { LANG_COOKIE_OPTIONS, setLocals } from './lib/locals.js';
+import { getUi } from './config/i18n.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -54,6 +56,38 @@ const ASSET_VERSION = Math.floor(newestMtime(PUBLIC_DIR)).toString(36);
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// ── Язык страницы ────────────────────────────────────────────────────────────
+// Порядок выбора описан в src/lib/lang.js, раскладка по res.locals — в
+// src/lib/locals.js. Здесь middleware только связывает одно с другим.
+//
+// Язык приглашения на этом этапе ещё неизвестен — за ним нужен поход в
+// хранилище. Его подставляет routes/invite.js через applyInviteLang().
+app.use((req, res, next) => {
+  // Переключатель языка: ставим cookie и убираем ?lang= из адреса, чтобы
+  // параметр не тянулся по всем последующим ссылкам. Прочие параметры
+  // (например ?saved=1) сохраняем.
+  //
+  // Перехватываем только GET: у остальных методов ?lang= может сопровождать
+  // тело запроса (например форму RSVP), и редирект 302 это тело потеряет.
+  const requested = req.method === 'GET' ? normalizeLang(req.query.lang) : null;
+  if (requested) {
+    res.cookie(LANG_COOKIE, requested, LANG_COOKIE_OPTIONS);
+    const url = new URL(req.originalUrl, 'http://placeholder');
+    url.searchParams.delete('lang');
+    return res.redirect(302, `${url.pathname}${url.search}`);
+  }
+
+  setLocals(
+    req,
+    res,
+    resolveLang({
+      cookies: req.cookies || {},
+      acceptLanguage: req.get('accept-language') || '',
+    }),
+  );
+  next();
+});
+
 // Сессии (для админ-раздела)
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -81,11 +115,9 @@ app.use(
   }),
 );
 
-// Общие переменные для всех шаблонов
+// Общие переменные для всех шаблонов (язык, контент и siteTitle ставит
+// middleware выбора языка).
 app.use((req, res, next) => {
-  // Порядок — как в монограмме: сначала жених, потом невеста.
-  const content = getContent(DEFAULT_LANG);
-  res.locals.siteTitle = `${content.couple.groom} & ${content.couple.bride}`;
   res.locals.currentYear = new Date().getFullYear();
   res.locals.assetVersion = ASSET_VERSION;
   next();

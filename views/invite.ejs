@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="<%= lang %>">
 <head>
   <%- include('partials/head', { pageTitle: 'Приглашение · ' + siteTitle }) %>
 </head>
 <body class="invite-page">
   <header class="hero hero--compact<%= content.couple.photoUrl ? ' hero--split' : '' %>">
     <div class="hero__inner">
+      <%- include('partials/lang-switcher') %>
       <div class="hero__text">
         <p class="hero__eyebrow">Дорогие</p>
         <h1 class="hero__names hero__names--invite"><%= invite.names %></h1>

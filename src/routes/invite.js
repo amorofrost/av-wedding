@@ -11,12 +11,9 @@ router.get('/invite/:code', async (req, res, next) => {
     const store = await getStore();
     const invite = await store.getInvite(req.params.code);
     if (!invite) {
-      return res
-        .status(404)
-        .render('invite-not-found', { content: getContent(DEFAULT_LANG), page: 'invite' });
+      return res.status(404).render('invite-not-found', { page: 'invite' });
     }
     res.render('invite', {
-      content: getContent(DEFAULT_LANG),
       invite,
       page: 'invite',
       saved: req.query.saved === '1',
@@ -33,9 +30,7 @@ router.post('/invite/:code/rsvp', async (req, res, next) => {
     const store = await getStore();
     const invite = await store.getInvite(req.params.code);
     if (!invite) {
-      return res
-        .status(404)
-        .render('invite-not-found', { content: getContent(DEFAULT_LANG), page: 'invite' });
+      return res.status(404).render('invite-not-found', { page: 'invite' });
     }
 
     const attendingRaw = req.body.attending;
@@ -43,7 +38,6 @@ router.post('/invite/:code/rsvp', async (req, res, next) => {
 
     if (attending === null) {
       return res.status(400).render('invite', {
-        content: getContent(DEFAULT_LANG),
         invite,
         page: 'invite',
         saved: false,

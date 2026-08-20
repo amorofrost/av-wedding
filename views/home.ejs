@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="<%= lang %>">
 <head>
   <%- include('partials/head') %>
 </head>
@@ -7,6 +7,7 @@
   <!-- ── Обложка ─────────────────────────────────────────────────────── -->
   <header class="hero<%= content.couple.photoUrl ? ' hero--split' : '' %>">
     <div class="hero__inner">
+      <%- include('partials/lang-switcher') %>
       <div class="hero__text">
         <p class="hero__eyebrow">Мы женимся</p>
         <h1 class="hero__names">
