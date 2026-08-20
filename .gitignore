@@ -13,3 +13,7 @@ src/config/content.local.js
 *.swp
 *.swo
 *~
+
+# Рабочие копии git worktree и служебные файлы Claude Code.
+.claude/worktrees/
+.superpowers/
