@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { nanoid } from 'nanoid';
 import { getContent } from '../config/content.js';
-import { DEFAULT_LANG } from '../lib/lang.js';
+import { SUPPORTED, DEFAULT_LANG, LANG_SHORT } from '../lib/lang.js';
 import { getStore, usingAzure } from '../lib/store.js';
 import { requireAdmin, checkPassword } from '../middleware/auth.js';
 
@@ -9,6 +9,9 @@ const router = Router();
 
 // Админка не переводится — подписи всегда берём на русском.
 const adminContent = getContent(DEFAULT_LANG);
+
+// Подписи языков в админке — она не переводится и остаётся русской.
+const LANG_NAMES_RU = { ru: 'Русский', uk: 'Украинский', en: 'Английский' };
 
 const APP_URL = (process.env.APP_URL || '').replace(/\/$/, '');
 
@@ -85,6 +88,8 @@ router.get('/', requireAdmin, async (req, res, next) => {
       backend: usingAzure() ? 'Azure Table Storage' : 'Локальный файл (dev)',
       created: req.query.created || null,
       flash: req.query.flash || null,
+      langOptions: SUPPORTED.map((code) => ({ code, name: LANG_NAMES_RU[code] })),
+      langShort: (code) => LANG_SHORT[code] || '',
     });
   } catch (err) {
     next(err);
@@ -101,12 +106,17 @@ router.post('/invites', requireAdmin, async (req, res, next) => {
     let maxGuests = parseInt(req.body.maxGuests, 10);
     if (Number.isNaN(maxGuests) || maxGuests < 1) maxGuests = 1;
 
+    // Язык приглашения — только из известного списка, как и всё остальное,
+    // что приходит из формы.
+    const lang = SUPPORTED.includes(req.body.lang) ? req.body.lang : DEFAULT_LANG;
+
     const code = nanoid(10);
     await store.createInvite({
       code,
       names,
       maxGuests,
       note: String(req.body.note || '').trim(),
+      lang,
     });
 
     res.redirect('/admin?created=' + encodeURIComponent(code));
@@ -121,6 +131,20 @@ router.post('/invites/:code/delete', requireAdmin, async (req, res, next) => {
     const store = await getStore();
     await store.deleteInvite(req.params.code);
     res.redirect('/admin?flash=' + encodeURIComponent('Приглашение удалено.'));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── Смена языка приглашения ──────────────────────────────────────────────────
+// Код приглашения — это и есть адрес ссылки, поэтому после рассылки язык
+// нужно уметь поправить, не выдавая гостю новый адрес.
+router.post('/invites/:code/lang', requireAdmin, async (req, res, next) => {
+  try {
+    const store = await getStore();
+    const lang = SUPPORTED.includes(req.body.lang) ? req.body.lang : DEFAULT_LANG;
+    await store.updateInvite(req.params.code, { lang });
+    res.redirect('/admin?flash=' + encodeURIComponent('Язык приглашения обновлён.'));
   } catch (err) {
     next(err);
   }
@@ -141,6 +165,7 @@ router.get('/export.csv', requireAdmin, async (req, res, next) => {
       'Имена',
       'Код',
       'Макс. гостей',
+      'Язык',
       'Ответ получен',
       'Придёт',
       'Кол-во гостей',
@@ -156,6 +181,7 @@ router.get('/export.csv', requireAdmin, async (req, res, next) => {
         i.names,
         i.code,
         i.maxGuests,
+        LANG_NAMES_RU[i.lang] || i.lang,
         i.responded ? 'да' : 'нет',
         i.attending === true ? 'да' : i.attending === false ? 'нет' : '',
         i.guestCount ?? '',

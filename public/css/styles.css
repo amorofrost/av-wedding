@@ -471,3 +471,15 @@ textarea.field__input { resize: vertical; }
 /* На страницах-карточках (ошибка, приглашение не найдено) шапки нет,
    поэтому переключатель крепится к окну. */
 .centered-page .lang-switcher { position: fixed; }
+
+.badge--lang {
+  background: var(--bg-tint);
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+}
+.field__input--mini {
+  width: auto;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.8rem;
+}
+.lang-form { margin-top: 0.35rem; display: flex; gap: 0.25rem; }

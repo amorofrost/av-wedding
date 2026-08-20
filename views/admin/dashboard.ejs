@@ -50,6 +50,14 @@
           <span class="field__label">Макс. гостей</span>
           <input type="number" name="maxGuests" class="field__input" min="1" max="20" value="2" />
         </label>
+        <label class="field field--narrow">
+          <span class="field__label">Язык приглашения</span>
+          <select name="lang" class="field__input">
+            <% langOptions.forEach(function (o) { %>
+              <option value="<%= o.code %>" <%= o.code === 'ru' ? 'selected' : '' %>><%= o.name %></option>
+            <% }); %>
+          </select>
+        </label>
         <label class="field">
           <span class="field__label">Заметка (только для вас)</span>
           <input type="text" name="note" class="field__input" placeholder="Напр.: со стороны невесты" />
@@ -86,6 +94,7 @@
                 <tr data-name="<%= (i.names || '').toLowerCase() %>">
                   <td>
                     <strong><%= i.names %></strong>
+                    <span class="badge badge--lang"><%= langShort(i.lang) %></span>
                     <% if (i.note) { %><span class="row-note"><%= i.note %></span><% } %>
                     <span class="muted small">макс. <%= i.maxGuests %></span>
                   </td>
@@ -110,6 +119,14 @@
                     <button type="button" class="btn btn--sm btn--ghost copy-btn"
                       data-copy="<%= inviteUrl(i.code) %>">Копировать</button>
                     <a class="link-open" href="/invite/<%= i.code %>" target="_blank" rel="noopener">↗</a>
+                    <form method="post" action="/admin/invites/<%= i.code %>/lang" class="inline lang-form">
+                      <select name="lang" class="field__input field__input--mini">
+                        <% langOptions.forEach(function (o) { %>
+                          <option value="<%= o.code %>" <%= o.code === i.lang ? 'selected' : '' %>><%= o.name %></option>
+                        <% }); %>
+                      </select>
+                      <button type="submit" class="btn btn--sm btn--ghost" title="Сменить язык">OK</button>
+                    </form>
                   </td>
                   <td>
                     <form method="post" action="/admin/invites/<%= i.code %>/delete" class="inline"

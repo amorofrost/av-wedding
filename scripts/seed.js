@@ -5,9 +5,9 @@ import { nanoid } from 'nanoid';
 import { getStore, usingAzure } from '../src/lib/store.js';
 
 const sample = [
-  { names: 'Иван и Мария Петровы', maxGuests: 2, note: 'со стороны невесты' },
-  { names: 'Александр Смирнов', maxGuests: 1, note: 'коллега' },
-  { names: 'Семья Ковалёвых', maxGuests: 4, note: 'родственники' },
+  { names: 'Иван и Мария Петровы', maxGuests: 2, note: 'со стороны невесты', lang: 'ru' },
+  { names: 'Олена Ковальчук', maxGuests: 1, note: 'подруга невесты', lang: 'uk' },
+  { names: 'John & Kate Miller', maxGuests: 4, note: 'friends from Seattle', lang: 'en' },
 ];
 
 const store = await getStore();

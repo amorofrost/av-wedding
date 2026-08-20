@@ -18,6 +18,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SUPPORTED, DEFAULT_LANG } from './lang.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,6 +33,9 @@ function normalize(entity = {}) {
     names: entity.names ?? '',
     maxGuests: Number(entity.maxGuests ?? 1),
     note: entity.note ?? '', // приватная заметка организатора (гость не видит)
+    // Язык персональной ссылки. Записи, созданные до появления поля, отдают
+    // русский — миграция не нужна, как и в случае с overnight.
+    lang: SUPPORTED.includes(entity.lang) ? entity.lang : DEFAULT_LANG,
     // RSVP
     responded: Boolean(entity.responded),
     attending:
@@ -90,6 +94,7 @@ class AzureStore {
       names: inv.names ?? '',
       maxGuests: Number(inv.maxGuests ?? 1),
       note: inv.note ?? '',
+      lang: inv.lang || DEFAULT_LANG,
       responded: Boolean(inv.responded),
       attending: inv.attending === null ? '' : inv.attending,
       guestCount: inv.guestCount === null ? '' : Number(inv.guestCount),
