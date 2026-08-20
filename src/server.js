@@ -72,7 +72,13 @@ app.use((req, res, next) => {
   const requested = req.method === 'GET' ? normalizeLang(req.query.lang) : null;
   if (requested) {
     res.cookie(LANG_COOKIE, requested, LANG_COOKIE_OPTIONS);
-    const url = new URL(req.originalUrl, 'http://placeholder');
+    let url;
+    try {
+      url = new URL(req.originalUrl, 'http://placeholder');
+    } catch {
+      // Адрес неразбираем — уходим на главную, а не роняем запрос исключением.
+      return res.redirect(302, '/');
+    }
     url.searchParams.delete('lang');
     return res.redirect(302, `${url.pathname}${url.search}`);
   }

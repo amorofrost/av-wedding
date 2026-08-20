@@ -81,7 +81,14 @@ export function resolveLang({ cookies = {}, acceptLanguage = '', inviteLang = nu
 // (например ?saved=1) сохраняются, старый lang заменяется, а не дублируется.
 export function buildLangHref(originalUrl, code) {
   // База нужна только для разбора относительного адреса и в результат не идёт.
-  const url = new URL(originalUrl || '/', 'http://placeholder');
+  let url;
+  try {
+    url = new URL(originalUrl || '/', 'http://placeholder');
+  } catch {
+    // Адрес неразбираем (например, "/\"): ведём переключатель на главную,
+    // иначе исключение свалит и саму страницу, и обработчик ошибок.
+    url = new URL('/', 'http://placeholder');
+  }
   url.searchParams.delete('lang');
   url.searchParams.set('lang', code);
   return `${url.pathname}${url.search}`;

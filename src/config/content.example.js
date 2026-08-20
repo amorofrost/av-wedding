@@ -33,10 +33,10 @@ export default {
     // Фото пары в шапке. Ссылка задаётся переменной окружения HERO_PHOTO_URL —
     // репозиторий публичный, а ссылка на личное фото в него попадать не должна.
     // Если не задана, шапка остаётся текстовой.
-    photoUrl: '',
+    photoUrl: process.env.HERO_PHOTO_URL || '',
     // Какую часть кадра показывать при обрезке (CSS object-position):
     // center, top, 'center 30%' и т.п. Полезно, если пара стоит не по центру.
-    photoPosition: 'center',
+    photoPosition: process.env.HERO_PHOTO_POSITION || 'center',
   },
 
   // Дата и время события
@@ -120,7 +120,7 @@ export default {
     mapUrl: '',
     // Фото дома. Ссылка задаётся переменной окружения VENUE_PHOTO_URL — так же,
     // как фото пары в шапке. Если не задана, блок остаётся без картинки.
-    photoUrl: '',
+    photoUrl: process.env.VENUE_PHOTO_URL || '',
   },
 
   // Расписание по дням. Каждый день — заголовок и список пунктов;
@@ -178,12 +178,12 @@ export default {
     {
       name: { ru: 'Имя', uk: 'Ім’я', en: 'Name' },
       role: { ru: 'по любым вопросам', uk: 'з будь-яких питань', en: 'for any questions' },
-      phone: '',
+      phone: process.env.CONTACT_PHONE || '',
     },
     {
       name: { ru: 'Имя', uk: 'Ім’я', en: 'Name' },
       role: { ru: 'по любым вопросам', uk: 'з будь-яких питань', en: 'for any questions' },
-      phone: '',
+      phone: process.env.CONTACT_PHONE2 || '',
     },
   ],
 

@@ -50,7 +50,7 @@ src/
   routes/               — public / invite / admin
 views/                  — EJS-шаблоны (partials/lang-switcher.ejs — переключатель языка)
 public/                — CSS и клиентский JS
-test/                  — юнит-тесты (node --test), 37 тестов на язык/переводы
+test/                  — юнит-тесты (node --test), несколько файлов тестов на язык/переводы
 scripts/seed.js        — тестовые приглашения (npm run seed)
 Dockerfile, docker-compose.yml
 .env.example           — пример настроек
@@ -143,7 +143,7 @@ venue: {
 npm install
 cp .env.example .env        # задайте ADMIN_PASSWORD и SESSION_SECRET
 cp src/config/content.example.js src/config/content.local.js   # личные данные
-npm test                    # юнит-тесты (не требуют .env и Azure)
+npm test                    # юнит-тесты (не требуют .env и Azure, но нужен content.local.js — см. выше)
 npm run seed                # (необязательно) добавит тестовые приглашения
 npm start
 ```

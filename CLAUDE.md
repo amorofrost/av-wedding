@@ -20,7 +20,7 @@ npm install
 npm run dev      # node --watch src/server.js — restarts on file change
 npm start        # production entrypoint
 npm run seed     # inserts 3 sample invites, prints their /invite/<code> URLs
-npm test         # node --test test/ — 37 tests, no build step
+npm test         # node --test test/ — a handful of test files covering the pure modules, no build step
 ```
 
 Requires Node >= 20 (Docker image is node:22-alpine). Two setup copies are needed before the app will
@@ -31,10 +31,10 @@ Azure account.
 
 Docker: `docker compose up -d --build`, then `docker compose logs -f`. Health endpoint: `GET /healthz`.
 
-**There is a test suite: `npm test` (`node --test test/`), 37 tests across five files, no new
-dependencies.** It covers pure logic only — language resolution, map collapsing, pluralization, and
-the completeness of `content.js`/`i18n.js` — and does not touch views, routes, or storage. It cannot
-catch a broken template or a wrong route. Verify changes by *also* running `npm run dev` and
+**There is a test suite: `npm test` (`node --test test/`), a handful of test files covering the pure
+modules, no new dependencies.** It covers pure logic only — language resolution, map collapsing,
+pluralization, and the completeness of `content.js`/`i18n.js` — and does not touch views, routes, or
+storage. It cannot catch a broken template or a wrong route. Verify changes by *also* running `npm run dev` and
 exercising the affected page: `/` (home), `/invite/<code>` (invite + RSVP), `/admin` (login,
 create/delete invite, `/admin/export.csv`). Do not claim a change works without doing both — there is
 nothing else to catch regressions. If you add tooling, wire it into `package.json` scripts and update

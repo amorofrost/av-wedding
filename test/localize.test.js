@@ -30,7 +30,7 @@ test('localize falls back to Russian, then to any present value', () => {
 });
 
 test('localize passes bare values through untouched', () => {
-  assert.equal(localize('The Casa Grande', 'en'), 'The Casa Grande');
+  assert.equal(localize('Some Venue', 'en'), 'Some Venue');
   assert.equal(localize(42, 'ru'), 42);
   assert.equal(localize('', 'ru'), '');
   assert.equal(localize(null, 'ru'), null);
@@ -38,11 +38,11 @@ test('localize passes bare values through untouched', () => {
 
 test('localize recurses into ordinary objects', () => {
   const input = {
-    name: 'The Casa Grande',
+    name: 'Some Venue',
     kicker: { ru: 'Место', uk: 'Місце', en: 'Venue' },
   };
   assert.deepEqual(localize(input, 'uk'), {
-    name: 'The Casa Grande',
+    name: 'Some Venue',
     kicker: 'Місце',
   });
 });

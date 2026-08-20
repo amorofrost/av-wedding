@@ -91,3 +91,7 @@ test('buildLangHref replaces an existing lang param rather than duplicating it',
   assert.equal(buildLangHref('/?lang=ru', 'en'), '/?lang=en');
   assert.equal(buildLangHref('/invite/x?lang=ru&saved=1', 'uk'), '/invite/x?saved=1&lang=uk');
 });
+
+test('buildLangHref falls back to the root for an unparseable target', () => {
+  assert.equal(buildLangHref('/\\', 'en'), '/?lang=en');
+});
