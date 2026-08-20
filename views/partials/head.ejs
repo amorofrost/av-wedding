@@ -9,7 +9,7 @@
   откатится к siteTitle. Без своего pageTitle страница берёт siteTitle — это нормально.
 %>
 <title><%= typeof pageTitle !== 'undefined' ? pageTitle : siteTitle %></title>
-<meta name="description" content="Приглашение на свадьбу <%= siteTitle %>" />
+<meta name="description" content="<%= t.meta.description %> <%= siteTitle %>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link

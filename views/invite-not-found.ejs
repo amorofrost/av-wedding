@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="<%= lang %>">
 <head>
-  <%- include('partials/head', { pageTitle: 'Приглашение не найдено' }) %>
+  <%- include('partials/head', { pageTitle: t.errors.inviteNotFoundTitle }) %>
 </head>
 <body>
   <main class="centered-page">
     <%- include('partials/lang-switcher') %>
     <div class="card-message">
       <div class="card-message__emoji">💌</div>
-      <h1>Приглашение не найдено</h1>
-      <p>Похоже, ссылка неполная или устарела. Пожалуйста, проверьте её ещё раз
-         или свяжитесь с нами — мы всё исправим.</p>
-      <a href="/" class="btn btn--ghost">На главную</a>
+      <h1><%= t.errors.inviteNotFoundTitle %></h1>
+      <p><%= t.errors.inviteNotFoundText %></p>
+      <a href="/" class="btn btn--ghost"><%= t.common.backHome %></a>
     </div>
   </main>
   <%- include('partials/footer') %>

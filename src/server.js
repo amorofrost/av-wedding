@@ -130,10 +130,11 @@ app.use('/admin', adminRoutes);
 
 // 404
 app.use((req, res) => {
+  if (!res.locals.t) setLocals(req, res, DEFAULT_LANG);
   res.status(404).render('error', {
     content: res.locals.content || getContent(DEFAULT_LANG),
     code: 404,
-    message: 'Страница не найдена',
+    message: (res.locals.t || getUi(DEFAULT_LANG)).errors.notFound,
   });
 });
 
@@ -141,10 +142,11 @@ app.use((req, res) => {
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error('Ошибка:', err);
+  if (!res.locals.t) setLocals(req, res, DEFAULT_LANG);
   res.status(500).render('error', {
     content: res.locals.content || getContent(DEFAULT_LANG),
     code: 500,
-    message: 'Что-то пошло не так. Попробуйте позже.',
+    message: (res.locals.t || getUi(DEFAULT_LANG)).errors.server,
   });
 });
 

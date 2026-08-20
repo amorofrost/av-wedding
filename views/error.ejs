@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= lang %>">
 <head>
-  <%- include('partials/head', { pageTitle: 'Ошибка ' + code }) %>
+  <%- include('partials/head', { pageTitle: t.titles.error + ' ' + code }) %>
 </head>
 <body>
   <main class="centered-page">
@@ -10,7 +10,7 @@
       <div class="card-message__emoji"><%= code === 404 ? '🔍' : '⚠️' %></div>
       <h1><%= code %></h1>
       <p><%= message %></p>
-      <a href="/" class="btn btn--ghost">На главную</a>
+      <a href="/" class="btn btn--ghost"><%= t.common.backHome %></a>
     </div>
   </main>
   <%- include('partials/footer') %>

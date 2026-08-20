@@ -41,7 +41,7 @@ router.post('/invite/:code/rsvp', async (req, res, next) => {
         invite,
         page: 'invite',
         saved: false,
-        error: 'Пожалуйста, выберите, сможете ли вы присутствовать.',
+        error: res.locals.t.rsvp.errorNoChoice,
       });
     }
 
