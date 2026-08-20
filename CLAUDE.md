@@ -109,8 +109,12 @@ UI tree, as `{ ru, uk, en }`. A bare string means "the same in every language" a
 untouched — `venue.name`, hex colors, URLs. `localize(tree, lang)` (`src/lib/localize.js`) walks a
 tree and collapses every such map to the one string for `lang`, leaving bare strings alone.
 `getContent(lang)` (`content.js`) and `getUi(lang)` (`i18n.js`) each memoize one collapsed object per
-language the first time it's requested, so the walk happens once per language at boot, not per
-request.
+language, built the first time that language is actually requested and reused for every later
+request — not precomputed for all three at startup. In practice `ru` gets forced early as a side
+effect of `admin.js`'s top-level `const adminContent = getContent(DEFAULT_LANG)`, which runs at
+module load because `server.js` imports the admin router, while `uk` and `en` are only built on the
+first guest request in that language — which may be much later, or never. The point is that the
+walk is per-language, not per-request.
 
 **`src/config/content.js` has no default export, on purpose.** Before collapsing, every translatable
 field is a `{ ru, uk, en }` object, not a string. A bare `import content from './content.js'` would
@@ -153,8 +157,9 @@ gitignored `content.local.js`.
 `test/content.test.js` each walk their tree with a `findIncomplete()` helper and fail, naming the
 exact missing path (e.g. `hero.eyebrow.uk`), if any language map is short a language. Comments,
 per the rule at the top of this file, stay Russian regardless. **Known blind spot:** both walkers
-identify a language map by "every key is a supported language code," so `rsvp.guests` — an object
-whose top-level keys already are `ru`/`uk`/`en` — is treated as a terminal map and never recursed
+identify a language map by "every key is a supported language code," so `rsvp.guests` (in
+`i18n.js`'s tree — `content.js`'s own `rsvp` object has no `guests` field) — an object whose
+top-level keys already are `ru`/`uk`/`en` — is treated as a terminal map and never recursed
 into. Its values are themselves plural-form objects (`{ one, few, many }` for ru/uk, `{ one, other }`
 for en), and a dropped form inside one of those (e.g. a missing `few` in `uk`) would pass both test
 files silently.
