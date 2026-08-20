@@ -17,3 +17,7 @@ src/config/content.local.js
 # Рабочие копии git worktree и служебные файлы Claude Code.
 .claude/worktrees/
 .superpowers/
+
+# Планы и спецификации агентов: содержат личные данные свадьбы целиком
+# (имена, площадку, расписание), поэтому в публичный репозиторий не идут.
+docs/superpowers/
