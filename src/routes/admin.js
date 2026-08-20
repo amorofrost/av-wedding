@@ -1,10 +1,14 @@
 import { Router } from 'express';
 import { nanoid } from 'nanoid';
-import content from '../config/content.js';
+import { getContent } from '../config/content.js';
+import { DEFAULT_LANG } from '../lib/lang.js';
 import { getStore, usingAzure } from '../lib/store.js';
 import { requireAdmin, checkPassword } from '../middleware/auth.js';
 
 const router = Router();
+
+// Админка не переводится — подписи всегда берём на русском.
+const adminContent = getContent(DEFAULT_LANG);
 
 const APP_URL = (process.env.APP_URL || '').replace(/\/$/, '');
 
@@ -27,12 +31,12 @@ function countGuests(invites, values) {
 }
 
 function overnightLabel(value) {
-  const option = content.rsvp.overnightOptions.find((o) => o.value === value);
+  const option = adminContent.rsvp.overnightOptions.find((o) => o.value === value);
   return option ? option.label : '';
 }
 
 function overnightShort(value) {
-  const option = content.rsvp.overnightOptions.find((o) => o.value === value);
+  const option = adminContent.rsvp.overnightOptions.find((o) => o.value === value);
   return option ? option.short : '';
 }
 

@@ -1,12 +1,13 @@
 import { Router } from 'express';
-import content from '../config/content.js';
+import { getContent } from '../config/content.js';
+import { DEFAULT_LANG } from '../lib/lang.js';
 
 const router = Router();
 
 // Главная страница: вся информация о свадьбе.
 router.get('/', (req, res) => {
   res.render('home', {
-    content,
+    content: getContent(DEFAULT_LANG),
     invite: null,
     page: 'home',
   });

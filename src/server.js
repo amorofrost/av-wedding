@@ -9,8 +9,9 @@ import cookieParser from 'cookie-parser';
 import publicRoutes from './routes/public.js';
 import inviteRoutes from './routes/invite.js';
 import adminRoutes from './routes/admin.js';
-import content from './config/content.js';
+import { getContent } from './config/content.js';
 import { getStore, usingAzure } from './lib/store.js';
+import { DEFAULT_LANG } from './lib/lang.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -83,6 +84,7 @@ app.use(
 // Общие переменные для всех шаблонов
 app.use((req, res, next) => {
   // Порядок — как в монограмме: сначала жених, потом невеста.
+  const content = getContent(DEFAULT_LANG);
   res.locals.siteTitle = `${content.couple.groom} & ${content.couple.bride}`;
   res.locals.currentYear = new Date().getFullYear();
   res.locals.assetVersion = ASSET_VERSION;
@@ -97,7 +99,7 @@ app.use('/admin', adminRoutes);
 // 404
 app.use((req, res) => {
   res.status(404).render('error', {
-    content,
+    content: res.locals.content || getContent(DEFAULT_LANG),
     code: 404,
     message: 'Страница не найдена',
   });
@@ -108,7 +110,7 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   console.error('Ошибка:', err);
   res.status(500).render('error', {
-    content,
+    content: res.locals.content || getContent(DEFAULT_LANG),
     code: 500,
     message: 'Что-то пошло не так. Попробуйте позже.',
   });

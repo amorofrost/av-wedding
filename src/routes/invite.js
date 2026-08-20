@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import content from '../config/content.js';
+import { getContent } from '../config/content.js';
+import { DEFAULT_LANG } from '../lib/lang.js';
 import { getStore } from '../lib/store.js';
 
 const router = Router();
@@ -10,10 +11,12 @@ router.get('/invite/:code', async (req, res, next) => {
     const store = await getStore();
     const invite = await store.getInvite(req.params.code);
     if (!invite) {
-      return res.status(404).render('invite-not-found', { content, page: 'invite' });
+      return res
+        .status(404)
+        .render('invite-not-found', { content: getContent(DEFAULT_LANG), page: 'invite' });
     }
     res.render('invite', {
-      content,
+      content: getContent(DEFAULT_LANG),
       invite,
       page: 'invite',
       saved: req.query.saved === '1',
@@ -30,7 +33,9 @@ router.post('/invite/:code/rsvp', async (req, res, next) => {
     const store = await getStore();
     const invite = await store.getInvite(req.params.code);
     if (!invite) {
-      return res.status(404).render('invite-not-found', { content, page: 'invite' });
+      return res
+        .status(404)
+        .render('invite-not-found', { content: getContent(DEFAULT_LANG), page: 'invite' });
     }
 
     const attendingRaw = req.body.attending;
@@ -38,7 +43,7 @@ router.post('/invite/:code/rsvp', async (req, res, next) => {
 
     if (attending === null) {
       return res.status(400).render('invite', {
-        content,
+        content: getContent(DEFAULT_LANG),
         invite,
         page: 'invite',
         saved: false,
@@ -55,7 +60,8 @@ router.post('/invite/:code/rsvp', async (req, res, next) => {
 
     // Ночёвка: принимаем только значения из списка в content, всё остальное —
     // «ответа нет». Отказавшимся гостям вопрос не задаётся вовсе.
-    const allowedOvernight = content.rsvp.overnightOptions.map((o) => o.value);
+    // Значения ночёвки от языка не зависят, поэтому берём их из русского набора.
+    const allowedOvernight = getContent(DEFAULT_LANG).rsvp.overnightOptions.map((o) => o.value);
     const overnightRaw = String(req.body.overnight || '');
     const overnight =
       attending && allowedOvernight.includes(overnightRaw) ? overnightRaw : '';
