@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { getContent } from '../config/content.js';
 import { DEFAULT_LANG } from '../lib/lang.js';
 import { getStore } from '../lib/store.js';
+import { applyInviteLang } from '../lib/locals.js';
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.get('/invite/:code', async (req, res, next) => {
     if (!invite) {
       return res.status(404).render('invite-not-found', { page: 'invite' });
     }
+    applyInviteLang(req, res, invite);
     res.render('invite', {
       invite,
       page: 'invite',
@@ -32,6 +34,7 @@ router.post('/invite/:code/rsvp', async (req, res, next) => {
     if (!invite) {
       return res.status(404).render('invite-not-found', { page: 'invite' });
     }
+    applyInviteLang(req, res, invite);
 
     const attendingRaw = req.body.attending;
     const attending = attendingRaw === 'yes' ? true : attendingRaw === 'no' ? false : null;

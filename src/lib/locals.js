@@ -5,7 +5,14 @@
 // приглашения, а server.js его уже импортирует — получился бы цикл.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { SUPPORTED, LANG_NAMES, LANG_SHORT, buildLangHref } from './lang.js';
+import {
+  SUPPORTED,
+  LANG_NAMES,
+  LANG_SHORT,
+  buildLangHref,
+  INVITE_LANG_COOKIE,
+  resolveLang,
+} from './lang.js';
 import { plural } from './plural.js';
 import { getContent } from '../config/content.js';
 import { getUi } from '../config/i18n.js';
@@ -37,4 +44,25 @@ export function setLocals(req, res, lang) {
     href: buildLangHref(req.originalUrl, code),
     active: code === lang,
   }));
+}
+
+// Язык приглашения известен только после похода в хранилище, то есть уже
+// внутри маршрута. Здесь язык пересчитывается с его учётом, обновляется
+// cookie av_lang_invite (она переносит язык приглашения на остальные страницы)
+// и переписываются res.locals.
+//
+// Явный выбор гостя не трогаем: если стоит av_lang, приглашение его не
+// перебивает.
+export function applyInviteLang(req, res, invite) {
+  const lang = resolveLang({
+    cookies: req.cookies || {},
+    acceptLanguage: req.get('accept-language') || '',
+    inviteLang: invite?.lang,
+  });
+
+  if (invite?.lang) {
+    res.cookie(INVITE_LANG_COOKIE, invite.lang, LANG_COOKIE_OPTIONS);
+  }
+
+  setLocals(req, res, lang);
 }
