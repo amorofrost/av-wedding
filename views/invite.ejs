@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html lang="<%= lang %>">
 <head>
-  <%- include('partials/head', { pageTitle: 'Приглашение · ' + siteTitle }) %>
+  <%- include('partials/head', { pageTitle: t.titles.invite + ' · ' + siteTitle }) %>
 </head>
 <body class="invite-page">
   <header class="hero hero--compact<%= content.couple.photoUrl ? ' hero--split' : '' %>">
     <div class="hero__inner">
       <%- include('partials/lang-switcher') %>
       <div class="hero__text">
-        <p class="hero__eyebrow">Дорогие</p>
+        <p class="hero__eyebrow"><%= t.invite.eyebrow %></p>
         <h1 class="hero__names hero__names--invite"><%= invite.names %></h1>
         <p class="hero__invite-lead">
-          <%= content.couple.groom %> и <%= content.couple.bride %> приглашают вас на свою свадьбу
+          <%= content.couple.groom %> <%= t.common.and %> <%= content.couple.bride %>
+          <%= t.invite.leadSuffix %>
         </p>
         <p class="hero__date"><%= content.event.dateHuman %> · <%= content.event.city %></p>
         <div class="countdown countdown--compact" data-target="<%= content.event.dateISO %>">
-          <div class="countdown__cell"><span data-cd="days">—</span><small>дней</small></div>
-          <div class="countdown__cell"><span data-cd="hours">—</span><small>часов</small></div>
-          <div class="countdown__cell"><span data-cd="minutes">—</span><small>минут</small></div>
+          <div class="countdown__cell"><span data-cd="days">—</span><small><%= t.countdown.days %></small></div>
+          <div class="countdown__cell"><span data-cd="hours">—</span><small><%= t.countdown.hours %></small></div>
+          <div class="countdown__cell"><span data-cd="minutes">—</span><small><%= t.countdown.minutes %></small></div>
         </div>
       </div>
 
       <% if (content.couple.photoUrl) { %>
         <figure class="hero__photo" style="--photo-pos: <%= content.couple.photoPosition %>">
           <img src="<%= content.couple.photoUrl %>"
-            alt="<%= content.couple.groom %> и <%= content.couple.bride %>"
+            alt="<%= content.couple.groom %> <%= t.common.and %> <%= content.couple.bride %>"
             fetchpriority="high" decoding="async" />
         </figure>
       <% } %>
@@ -38,31 +39,31 @@
            картинку в шапке уже занимает фото пары. -->
       <article class="venue venue--solo">
         <p class="venue__kicker"><%= content.venue.kicker %></p>
-        <p class="venue__time">Церемония в <%= content.event.timeHuman %></p>
+        <p class="venue__time"><%= t.invite.ceremonyAt %> <%= content.event.timeHuman %></p>
         <h3 class="venue__name"><%= content.venue.name %></h3>
         <p class="venue__address"><%= content.venue.address %></p>
         <% if (content.venue.mapUrl) { %>
-          <a class="btn btn--ghost" href="<%= content.venue.mapUrl %>" target="_blank" rel="noopener">На карте →</a>
+          <a class="btn btn--ghost" href="<%= content.venue.mapUrl %>" target="_blank" rel="noopener"><%= t.common.onMap %></a>
         <% } %>
       </article>
       <p class="invite-more">
-        <a href="/#when">Смотреть расписание и все детали →</a>
+        <a href="/#when"><%= t.invite.moreLink %></a>
       </p>
     </section>
 
     <!-- Форма RSVP -->
     <section id="rsvp" class="section section--tint rsvp-section">
-      <h2 class="section__title">Ваш ответ</h2>
+      <h2 class="section__title"><%= t.invite.rsvpTitle %></h2>
 
       <% if (saved) { %>
         <div class="alert alert--success">
-          <p>Спасибо! Ваш ответ сохранён.</p>
+          <p><%= t.invite.savedThanks %></p>
           <% if (invite.attending === true) { %>
-            <p>Будем очень рады видеть вас — <strong><%= invite.guestCount %></strong>
-              <%= invite.guestCount === 1 ? 'гость' : (invite.guestCount < 5 ? 'гостя' : 'гостей') %>.
-              Ответ можно изменить в любой момент до <%= content.rsvpDeadline.dateHuman %>.</p>
+            <p><%= t.invite.savedYesLead %> <strong><%= invite.guestCount %></strong>
+              <%= plural(invite.guestCount, t.rsvp.guests) %>.
+              <%= t.invite.savedYesTail %> <%= content.rsvpDeadline.dateHuman %>.</p>
           <% } else { %>
-            <p>Жаль, что не сможете быть с нами. Если планы изменятся — просто ответьте снова.</p>
+            <p><%= t.invite.savedNo %></p>
           <% } %>
         </div>
       <% } %>
@@ -73,32 +74,34 @@
 
       <% if (invite.responded && !saved) { %>
         <div class="alert alert--info">
-          <p>Вы уже ответили<%= invite.attending ? ' — ждём вас!' : '.' %>
-             Можно изменить ответ в форме ниже.</p>
+          <p><%= invite.attending ? t.invite.alreadyYes : t.invite.alreadyNo %>
+             <%= t.invite.alreadyTail %></p>
         </div>
       <% } %>
 
-      <p class="section__lead">Пожалуйста, ответьте до <strong><%= content.rsvpDeadline.dateHuman %></strong>.</p>
+      <p class="section__lead"><%= t.invite.deadlineLead %>
+        <strong><%= content.rsvpDeadline.dateHuman %></strong>.</p>
 
       <form class="rsvp-form" method="post" action="/invite/<%= encodeURIComponent(invite.code) %>/rsvp">
         <fieldset class="rsvp-attend">
-          <legend>Сможете присоединиться?</legend>
+          <legend><%= t.rsvp.attendLegend %></legend>
           <label class="choice">
             <input type="radio" name="attending" value="yes"
               <%= invite.attending === true ? 'checked' : '' %> required />
-            <span>С радостью буду 🎉</span>
+            <span><%= t.rsvp.yes %></span>
           </label>
           <label class="choice">
             <input type="radio" name="attending" value="no"
               <%= invite.attending === false ? 'checked' : '' %> />
-            <span>К сожалению, не смогу</span>
+            <span><%= t.rsvp.no %></span>
           </label>
         </fieldset>
 
         <div class="rsvp-details" data-max="<%= invite.maxGuests %>">
           <% if (invite.maxGuests > 1) { %>
             <label class="field">
-              <span class="field__label">Сколько вас будет? (максимум <%= invite.maxGuests %>)</span>
+              <span class="field__label"><%= t.rsvp.guestCountLabel %>
+                (<%= t.rsvp.maxHint %> <%= invite.maxGuests %>)</span>
               <select name="guestCount" class="field__input">
                 <% for (var n = 1; n <= invite.maxGuests; n++) { %>
                   <option value="<%= n %>" <%= (invite.guestCount || 1) === n ? 'selected' : '' %>><%= n %></option>
@@ -121,20 +124,20 @@
           </fieldset>
 
           <label class="field">
-            <span class="field__label">Ограничения в еде / аллергии</span>
+            <span class="field__label"><%= t.rsvp.dietaryLabel %></span>
             <input type="text" name="dietary" class="field__input"
-              maxlength="500" placeholder="Например: вегетарианец, без орехов"
+              maxlength="500" placeholder="<%= t.rsvp.dietaryPlaceholder %>"
               value="<%= invite.dietary || '' %>" />
           </label>
         </div>
 
         <label class="field">
-          <span class="field__label">Пожелание паре / заявка на песню (необязательно)</span>
+          <span class="field__label"><%= t.rsvp.messageLabel %></span>
           <textarea name="message" class="field__input" rows="3" maxlength="1000"
-            placeholder="Пара тёплых слов или любимый трек для танцпола"><%= invite.message || '' %></textarea>
+            placeholder="<%= t.rsvp.messagePlaceholder %>"><%= invite.message || '' %></textarea>
         </label>
 
-        <button type="submit" class="btn btn--primary">Отправить ответ</button>
+        <button type="submit" class="btn btn--primary"><%= t.rsvp.submit %></button>
       </form>
     </section>
   </main>
