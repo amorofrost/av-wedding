@@ -28,6 +28,7 @@ const ui = {
   },
 
   countdown: {
+    label: { ru: 'Обратный отсчёт', uk: 'Зворотний відлік', en: 'Countdown' },
     days: { ru: 'дней', uk: 'днів', en: 'days' },
     hours: { ru: 'часов', uk: 'годин', en: 'hours' },
     minutes: { ru: 'минут', uk: 'хвилин', en: 'minutes' },

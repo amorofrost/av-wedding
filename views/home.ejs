@@ -9,7 +9,7 @@
     <div class="hero__inner">
       <%- include('partials/lang-switcher') %>
       <div class="hero__text">
-        <p class="hero__eyebrow">Мы женимся</p>
+        <p class="hero__eyebrow"><%= t.hero.eyebrow %></p>
         <h1 class="hero__names">
           <span><%= content.couple.groom %></span>
           <span class="hero__amp">&amp;</span>
@@ -20,45 +20,45 @@
         </p>
         <p class="hero__city"><%= content.event.city %></p>
 
-        <div class="countdown" data-target="<%= content.event.dateISO %>" aria-label="Обратный отсчёт">
-          <div class="countdown__cell"><span data-cd="days">—</span><small>дней</small></div>
-          <div class="countdown__cell"><span data-cd="hours">—</span><small>часов</small></div>
-          <div class="countdown__cell"><span data-cd="minutes">—</span><small>минут</small></div>
-          <div class="countdown__cell"><span data-cd="seconds">—</span><small>секунд</small></div>
+        <div class="countdown" data-target="<%= content.event.dateISO %>" aria-label="<%= t.countdown.label %>">
+          <div class="countdown__cell"><span data-cd="days">—</span><small><%= t.countdown.days %></small></div>
+          <div class="countdown__cell"><span data-cd="hours">—</span><small><%= t.countdown.hours %></small></div>
+          <div class="countdown__cell"><span data-cd="minutes">—</span><small><%= t.countdown.minutes %></small></div>
+          <div class="countdown__cell"><span data-cd="seconds">—</span><small><%= t.countdown.seconds %></small></div>
         </div>
       </div>
 
       <% if (content.couple.photoUrl) { %>
         <figure class="hero__photo" style="--photo-pos: <%= content.couple.photoPosition %>">
           <img src="<%= content.couple.photoUrl %>"
-            alt="<%= content.couple.groom %> и <%= content.couple.bride %>"
+            alt="<%= content.couple.groom %> <%= t.common.and %> <%= content.couple.bride %>"
             fetchpriority="high" decoding="async" />
         </figure>
       <% } %>
 
-      <a href="#details" class="scroll-hint" aria-label="Листать вниз">⌄</a>
+      <a href="#details" class="scroll-hint" aria-label="<%= t.hero.scrollHint %>">⌄</a>
     </div>
   </header>
 
   <nav class="topnav">
-    <a href="#venue">Где</a>
-    <a href="#when">Когда</a>
-    <% if (content.story && content.story.length) { %><a href="#story">История</a><% } %>
-    <a href="#dresscode">Дресс-код</a>
-    <% if (content.faq && content.faq.length) { %><a href="#faq">Вопросы</a><% } %>
+    <a href="#venue"><%= t.nav.venue %></a>
+    <a href="#when"><%= t.nav.when %></a>
+    <% if (content.story && content.story.length) { %><a href="#story"><%= t.nav.story %></a><% } %>
+    <a href="#dresscode"><%= t.nav.dresscode %></a>
+    <% if (content.faq && content.faq.length) { %><a href="#faq"><%= t.nav.faq %></a><% } %>
   </nav>
 
   <main>
     <!-- ── Где ───────────────────────────────────────────────────────── -->
     <section id="venue" class="section">
-      <h2 class="section__title">Где</h2>
-      <p class="section__lead">Будем счастливы разделить этот день с вами.</p>
+      <h2 class="section__title"><%= t.home.whereTitle %></h2>
+      <p class="section__lead"><%= t.home.whereLead %></p>
 
       <div class="venue-block<%= content.venue.photoUrl ? ' venue-block--split' : '' %>">
         <% if (content.venue.photoUrl) { %>
           <figure class="venue__photo">
             <img src="<%= content.venue.photoUrl %>"
-              alt="<%= content.venue.name %> — дом, где пройдёт свадьба"
+              alt="<%= t.home.venuePhotoAlt %>"
               loading="lazy" decoding="async" />
           </figure>
         <% } %>
@@ -71,7 +71,7 @@
             <p class="venue__desc"><%= content.venue.description %></p>
           <% } %>
           <% if (content.venue.mapUrl) { %>
-            <a class="btn btn--ghost" href="<%= content.venue.mapUrl %>" target="_blank" rel="noopener">На карте →</a>
+            <a class="btn btn--ghost" href="<%= content.venue.mapUrl %>" target="_blank" rel="noopener"><%= t.common.onMap %></a>
           <% } %>
         </article>
       </div>
@@ -79,7 +79,7 @@
 
     <!-- ── Когда ─────────────────────────────────────────────────────── -->
     <section id="when" class="section section--tint">
-      <h2 class="section__title">Когда</h2>
+      <h2 class="section__title"><%= t.home.whenTitle %></h2>
       <div class="schedule">
         <% content.schedule.forEach(function (day) { %>
           <section class="schedule-day">
@@ -105,7 +105,7 @@
     <!-- ── История ───────────────────────────────────────────────────── -->
     <% if (content.story && content.story.length) { %>
       <section id="story" class="section">
-        <h2 class="section__title">Наша история</h2>
+        <h2 class="section__title"><%= t.home.storyTitle %></h2>
         <div class="story">
           <% content.story.forEach(function (s) { %>
             <article class="story__item">
@@ -133,7 +133,7 @@
     <!-- ── FAQ ───────────────────────────────────────────────────────── -->
     <% if (content.faq && content.faq.length) { %>
       <section id="faq" class="section section--tint">
-        <h2 class="section__title">Частые вопросы</h2>
+        <h2 class="section__title"><%= t.home.faqTitle %></h2>
         <div class="faq">
           <% content.faq.forEach(function (item) { %>
             <details class="faq__item">
@@ -147,18 +147,17 @@
 
     <!-- ── RSVP-подсказка ────────────────────────────────────────────── -->
     <section class="section section--cta">
-      <h2 class="section__title">Подтвердите присутствие</h2>
+      <h2 class="section__title"><%= t.home.ctaTitle %></h2>
       <p class="section__lead">
-        Мы отправили каждому гостю персональную ссылку-приглашение.
-        Пожалуйста, ответьте до <strong><%= content.rsvpDeadline.dateHuman %></strong>.
+        <%= t.home.ctaLead %> <strong><%= content.rsvpDeadline.dateHuman %></strong>.
       </p>
-      <p class="cta-hint">Откройте ссылку из вашего приглашения, чтобы ответить.</p>
+      <p class="cta-hint"><%= t.home.ctaHint %></p>
     </section>
 
     <!-- ── Контакты ──────────────────────────────────────────────────── -->
     <% if (content.contacts && content.contacts.length) { %>
       <section class="section">
-        <h2 class="section__title">Контакты</h2>
+        <h2 class="section__title"><%= t.home.contactsTitle %></h2>
         <div class="contacts">
           <% content.contacts.forEach(function (c) { %>
             <div class="contact">
