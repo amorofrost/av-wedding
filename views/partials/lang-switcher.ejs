@@ -4,8 +4,8 @@
 %>
 <nav class="lang-switcher" aria-label="<%= t.langSwitcher.label %>">
   <% langLinks.forEach(function (l) { %>
+    <%# aria-current выводится без экранирования — экранирующий вывод сломал бы кавычки атрибута %>
     <a class="lang-switcher__item<%= l.active ? ' is-active' : '' %>"
-      href="<%= l.href %>" lang="<%= l.code %>" title="<%= l.name %>"
-      <%= l.active ? 'aria-current="true"' : '' %>><%= l.short %></a>
+      href="<%= l.href %>" lang="<%= l.code %>" title="<%= l.name %>"<%- l.active ? ' aria-current="true"' : '' %>><%= l.short %></a>
   <% }); %>
 </nav>
