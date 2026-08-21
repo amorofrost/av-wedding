@@ -90,7 +90,10 @@ a { color: var(--accent-deep); }
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   align-items: center;
-  gap: clamp(2rem, 5vw, 4rem);
+  column-gap: clamp(2rem, 5vw, 4rem);
+  /* Отдельно от колоночного: между переключателем и содержимым нужен
+     небольшой отступ, а не те же 4rem. */
+  row-gap: 1.25rem;
   text-align: left;
 }
 .hero--split .hero__names { align-items: flex-start; }
@@ -434,17 +437,23 @@ textarea.field__input { resize: vertical; }
   .hero--split .hero__invite-lead { margin-left: auto; }
   .hero--split .countdown { justify-content: center; }
   .hero--split .hero__photo { order: -1; max-width: 300px; }
+  /* Фото поднимается наверх через order, поэтому переключателю нужен
+     меньший порядок — иначе он окажется между фото и именами. */
+  .hero--split .lang-switcher { order: -2; }
   /* Кадр чуть ниже, чтобы до имён не приходилось прокручивать */
   .hero--split .hero__photo img { aspect-ratio: 4 / 5; }
 }
 
 /* ── Переключатель языка ──────────────────────────────────────────────────── */
+/* Переключатель стоит обычным элементом в потоке и прижимается вправо.
+   Раньше он висел абсолютом в углу .hero__inner и налезал на арку с фото —
+   и на десктопе, и на телефоне. В потоке пересечение невозможно в принципе,
+   при любой ширине экрана. */
 .lang-switcher {
-  position: absolute;
-  top: 1rem;
-  right: 1.25rem;
   z-index: 5;
   display: flex;
+  width: max-content;
+  margin-left: auto;
   gap: 0.25rem;
   padding: 0.25rem;
   background: rgba(255, 253, 249, 0.75);
@@ -452,6 +461,11 @@ textarea.field__input { resize: vertical; }
   border-radius: 999px;
   backdrop-filter: blur(6px);
 }
+/* Шапка без фото: под переключателем нужен собственный отступ. */
+.hero .lang-switcher { margin-bottom: 1.25rem; }
+/* Шапка с фото: .hero__inner — сетка, поэтому переключатель занимает
+   отдельную строку над обеими колонками, а отступ даёт row-gap. */
+.hero--split .lang-switcher { grid-column: 1 / -1; margin-bottom: 0; }
 .lang-switcher__item {
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
@@ -469,8 +483,12 @@ textarea.field__input { resize: vertical; }
   color: var(--white);
 }
 /* На страницах-карточках (ошибка, приглашение не найдено) шапки нет,
-   поэтому переключатель крепится к окну. */
-.centered-page .lang-switcher { position: fixed; }
+   поэтому переключатель крепится к окну. Фото там тоже нет — налезать не на что. */
+.centered-page .lang-switcher {
+  position: fixed;
+  top: 1rem;
+  right: 1.25rem;
+}
 
 .badge--lang {
   background: var(--bg-tint);
