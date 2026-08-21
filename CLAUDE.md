@@ -233,6 +233,39 @@ In `docker-compose.yml`, `env_file: .env` passes the whole file through (so new 
 adding in two places), and the explicit `PORT=3000` under `environment:` must stay *after* it — the
 container always listens on 3000 and the host port is mapped via `ports`.
 
+### TLS and the shared reverse proxy
+
+This container does not terminate TLS and does not publish a public port: `ports` binds
+`127.0.0.1:3000` only, for debugging from the VM itself. Public traffic arrives at an nginx running
+in **another project's container** on the same VM — that one already owned `:80`/`:443` for an
+unrelated app — which matches this site's domain by SNI, presents its own Cloudflare Origin
+Certificate, and reverse-proxies to `http://av-wedding:3000`. Cloudflare fronts the domain in
+Full (strict) mode, so both legs are encrypted. The hostname itself is deliberately not written
+down here: it carries the couple's surname, and this repo is public — it lives in `APP_URL` in the
+gitignored `.env`, the same way names live only in `content.local.js`.
+
+The two containers find each other over a hand-created docker network named `edge`, declared
+`external: true` in both compose files. It belongs to neither compose project on purpose: the
+neighbouring project's deploy script runs `docker compose down`, which would fail to remove a
+network this container is still attached to. `docker network create edge` must exist before either
+project comes up — it is not created by any compose file.
+
+Consequences worth knowing before changing any of this:
+
+- **`SESSION_COOKIE_SECURE=true` is now correct and required.** nginx sets `X-Forwarded-Proto:
+  https` and `trust proxy` is already on, so the `Secure` cookie is issued. Setting it back to
+  `false` is the rollback if TLS ever breaks — see the gotcha above.
+- **This site's uptime is coupled to the neighbouring container.** Rebuilding it takes both sites
+  down for the seconds it takes to recreate. Accepted trade-off; decoupling means a third,
+  standalone proxy container owning `:80`/`:443`.
+- The proxy resolves `av-wedding` through docker's embedded DNS *at request time* (`resolver
+  127.0.0.11` plus a variable in `proxy_pass`), not at startup. So restarting this container needs
+  no nginx reload, and nginx still starts when this container is down.
+- **The vhost lives in the other repo's `nginx.conf`,** baked into its image — editing it means
+  rebuilding *that* image and committing there, or its deploy script's `git pull` will conflict.
+- The origin certificate is valid for 15 years and needs no renewal. It sits in `/etc/ssl/` on the
+  VM and is bind-mounted read-only into the proxy container — never baked into an image.
+
 ### Frontend
 
 EJS templates in `views/` (`partials/head.ejs` and `footer.ejs` are shared). A page title **must** be
